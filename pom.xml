@@ -8,6 +8,7 @@
   <artifactId>txmanager</artifactId>
   <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
+
   <modules>
     <module>txmanager-client</module>
     <module>txmanager-common</module>
@@ -24,6 +25,7 @@
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
 
+  <dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -31,6 +33,17 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>19.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>4.1.22.Final</version>
+    </dependency>
   </dependencies>
+  </dependencyManagement>
 
 </project>
