@@ -15,12 +15,12 @@ import java.util.logging.Logger;
  */
 public class AbstractMessageDecoder extends ByteToMessageDecoder{
 
-    private static final int MSG_LENGTH = Codec.MSG_LENGTH;
+    private static final int MSG_LENGTH = MessageCoder.MSG_LENGTH;
 
-    private Codec codec;
+    private MessageCoder messageCoder;
 
-    public AbstractMessageDecoder(final Codec codec){
-        this.codec = codec;
+    public AbstractMessageDecoder(final MessageCoder messageCoder){
+        this.messageCoder = messageCoder;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class AbstractMessageDecoder extends ByteToMessageDecoder{
             byte[] messageBody = new byte[msgLength];
             in.readBytes(messageBody);
             try {
-                Object obj = codec.decode(messageBody);
+                Object obj = messageCoder.decode(messageBody);
                 out.add(obj);
             }catch (IOException ex){
                 Logger.getLogger(AbstractMessageDecoder.class.getName()).log(Level.SEVERE,null,ex);

@@ -9,7 +9,7 @@ import java.io.IOException;
  * @author: he.tian
  * @time: 2018-10-16 11:20
  */
-public interface Codec {
+public interface MessageCoder {
 
     /**
      * 消息定长

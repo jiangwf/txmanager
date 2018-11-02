@@ -1,20 +1,43 @@
 package com.mljr.txmanager.remoting.netty;
 
+import com.mljr.txmanager.remoting.config.ServerConfig;
+import com.mljr.txmanager.remoting.netty.kryo.KryoDecoder;
+import com.mljr.txmanager.remoting.netty.kryo.KryoEncoder;
+import com.mljr.txmanager.remoting.netty.kryo.KryoMessageCoder;
+import com.mljr.txmanager.remoting.netty.kryo.KryoPoolFactory;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: he.tian
  * @time: 2018-10-16 11:11
  */
-public class ServerChannelInitializer implements ChannelInitializer<SocketChannel>{
+@Component
+public class ServerChannelInitializer extends ChannelInitializer<SocketChannel>{
+
+    private ServerConfig nettyConfig;
+
+    @Autowired
+    public ServerChannelInitializer(ServerConfig nettyConfig) {
+        this.nettyConfig = nettyConfig;
+    }
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast(new LoggingHandler(LogLevel.INFO));
+        KryoMessageCoder kryoMessageCoder = new KryoMessageCoder(KryoPoolFactory.getKryoPoolInstance());
+        pipeline.addLast(new KryoEncoder(kryoMessageCoder));
+        pipeline.addLast(new KryoDecoder(kryoMessageCoder));
+        pipeline.addLast("timeout",new IdleStateHandler(nettyConfig.getHeartTime(),nettyConfig.getHeartTime(),nettyConfig.getHeartTime(), TimeUnit.SECONDS));
+        pipeline.addLast(new NettyServerHandler());
     }
 }

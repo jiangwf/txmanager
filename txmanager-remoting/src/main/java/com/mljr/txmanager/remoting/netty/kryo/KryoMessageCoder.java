@@ -2,7 +2,7 @@ package com.mljr.txmanager.remoting.netty.kryo;
 
 import com.esotericsoftware.kryo.pool.KryoPool;
 import com.google.common.io.Closer;
-import com.mljr.txmanager.remoting.netty.Codec;
+import com.mljr.txmanager.remoting.netty.MessageCoder;
 import io.netty.buffer.ByteBuf;
 
 import java.io.ByteArrayInputStream;
@@ -14,11 +14,11 @@ import java.io.IOException;
  * @author: he.tian
  * @time: 2018-10-16 11:23
  */
-public class KyroCodec implements Codec {
+public class KryoMessageCoder implements MessageCoder {
 
     private KryoPool pool;
 
-    public KyroCodec(final KryoPool pool){
+    public KryoMessageCoder(final KryoPool pool){
         this.pool = pool;
     }
 

@@ -1,7 +1,7 @@
 package com.mljr.txmanager.remoting.netty.kryo;
 
 import com.mljr.txmanager.remoting.netty.AbstractMessageEncoder;
-import com.mljr.txmanager.remoting.netty.Codec;
+import com.mljr.txmanager.remoting.netty.MessageCoder;
 
 /**
  * @author: he.tian
@@ -9,7 +9,7 @@ import com.mljr.txmanager.remoting.netty.Codec;
  */
 public class KryoEncoder extends AbstractMessageEncoder {
 
-    public KryoEncoder(final Codec codec){
-        super(codec);
+    public KryoEncoder(final MessageCoder messageCoder){
+        super(messageCoder);
     }
 }
