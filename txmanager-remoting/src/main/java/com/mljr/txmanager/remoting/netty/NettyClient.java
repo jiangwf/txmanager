@@ -71,7 +71,7 @@ public class NettyClient{
         }
     }
 
-    private void doConnect(){
+    public void doConnect(){
         if(channel != null && channel.isActive()){
             return;
         }

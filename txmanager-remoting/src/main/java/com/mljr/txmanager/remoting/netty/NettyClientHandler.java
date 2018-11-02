@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.naming.event.EventContext;
-
 /**
  * @author: he.tian
  * @time: 2018-11-01 17:44
