@@ -1,5 +1,8 @@
 package com.mljr.txmanager.common.enums;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * netty client向netty server发起的请求动作
  * @author: he.tian
@@ -21,12 +24,18 @@ public enum ActionEnum {
 
     FAIL(6,"失败"),
 
+    HEART_BEAT(7,"心跳检测"),
+
     GET_TRANSDACTION_GROUP_STATUS(10,"获取事务组状态"),
 
     FIND_TRANSACTION_GROUP(11,"查找事务组");
 
+    @Getter
+    @Setter
     private int code;
 
+    @Getter
+    @Setter
     private String name;
 
     ActionEnum(int code, String name) {

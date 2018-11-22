@@ -16,7 +16,7 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -25,7 +25,7 @@ import javax.annotation.PreDestroy;
  * @author: he.tian
  * @time: 2018-10-15 14:46
  */
-@Component
+@Service
 public class NettyServer{
 
     private Logger logger = LoggerFactory.getLogger(getClass());

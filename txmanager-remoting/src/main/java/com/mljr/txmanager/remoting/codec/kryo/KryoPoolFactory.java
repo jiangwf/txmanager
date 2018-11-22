@@ -1,9 +1,9 @@
-package com.mljr.txmanager.remoting.netty.kryo;
+package com.mljr.txmanager.remoting.codec.kryo;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.pool.KryoFactory;
 import com.esotericsoftware.kryo.pool.KryoPool;
-import com.mljr.txmanager.common.model.Request;
+import com.mljr.txmanager.common.model.TransactionRequest;
 import org.objenesis.strategy.StdInstantiatorStrategy;
 
 /**
@@ -17,7 +17,7 @@ public final class KryoPoolFactory {
     private KryoFactory factory = () ->{
         Kryo kryo = new Kryo();
         kryo.setReferences(false);
-        kryo.register(Request.class);
+        kryo.register(TransactionRequest.class);
         kryo.setInstantiatorStrategy(new Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
         return kryo;
     };

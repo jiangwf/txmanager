@@ -1,8 +1,8 @@
 package com.mljr.txmanager.remoting.netty;
 
+import com.mljr.txmanager.common.enums.ActionEnum;
+import com.mljr.txmanager.common.model.TransactionRequest;
 import com.mljr.txmanager.core.SpringUtil;
-import com.mljr.txmanager.core.model.NettyActionEnum;
-import com.mljr.txmanager.core.model.NettyRequest;
 import com.mljr.txmanager.remoting.config.ClientConfig;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -37,9 +37,9 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
             if(event.state() == IdleState.READER_IDLE){
                 SpringUtil.INSTANCE.getBean(NettyClient.class).doConnect();
             }else if (event.state() == IdleState.WRITER_IDLE){
-                NettyRequest request = new NettyRequest();
-                request.setAction(NettyActionEnum.HEART.getCode());
-                ctx.writeAndFlush(request);
+                TransactionRequest transactionRequest = new TransactionRequest();
+                transactionRequest.setAction(ActionEnum.HEART_BEAT.getCode());
+                ctx.writeAndFlush(transactionRequest);
                 logger.info("发送事务管理器心跳检测");
             }else if(event.state() == IdleState.ALL_IDLE){
                 SpringUtil.INSTANCE.getBean(NettyClient.class).doConnect();

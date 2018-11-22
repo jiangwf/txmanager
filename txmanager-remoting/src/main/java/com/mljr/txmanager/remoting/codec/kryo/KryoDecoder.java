@@ -1,4 +1,4 @@
-package com.mljr.txmanager.remoting.netty.kryo;
+package com.mljr.txmanager.remoting.codec.kryo;
 
 import com.mljr.txmanager.remoting.netty.AbstractMessageDecoder;
 import com.mljr.txmanager.remoting.netty.MessageCoder;

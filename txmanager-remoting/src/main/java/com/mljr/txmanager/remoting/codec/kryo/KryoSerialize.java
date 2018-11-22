@@ -1,4 +1,4 @@
-package com.mljr.txmanager.remoting.netty.kryo;
+package com.mljr.txmanager.remoting.codec.kryo;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;

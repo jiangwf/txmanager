@@ -16,14 +16,14 @@ public interface ManagerService {
      * @param transactionGroup
      * @return
      */
-    boolean saveTransactionGroup(TransactionGroup transactionGroup);
+    void saveTransactionGroup(TransactionGroup transactionGroup);
 
     /**
      * 往事务组添加事务
      * @param transactionGroupId
      * @param transactionItem
      */
-    boolean addTransaction(String transactionGroupId, TransactionItem transactionItem);
+    void addTransaction(String transactionGroupId, TransactionItem transactionItem);
 
     /**
      * 根据事务组id获取事务组的事务项信息
@@ -42,7 +42,7 @@ public interface ManagerService {
      * 更新事务信息
      * @param transactionItem
      */
-    void updateTransactionItem(TransactionItem transactionItem);
+    void updateTransactionItem(String transactionGroupId,TransactionItem transactionItem);
 
 
     /**
