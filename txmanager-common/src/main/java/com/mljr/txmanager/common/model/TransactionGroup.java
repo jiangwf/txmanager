@@ -17,12 +17,12 @@ public class TransactionGroup implements Serializable{
     /**
      * 事务组id
      */
-    private String id;
+    private String transactionId;
 
     /**
      * 事务状态
      */
-    private int status;
+    private String status;
 
     private List<TransactionItem> transactionItemList;
 }

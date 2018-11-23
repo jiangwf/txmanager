@@ -31,7 +31,7 @@ public class TransactionMemoryDao {
     public void putTransactionGroup(TransactionGroup transactionGroup){
         lock.lock();
         try {
-            transactionGroupMap.put(transactionGroup.getId(),transactionGroup);
+            transactionGroupMap.put(transactionGroup.getTransactionId(),transactionGroup);
         }finally {
             lock.unlock();
         }

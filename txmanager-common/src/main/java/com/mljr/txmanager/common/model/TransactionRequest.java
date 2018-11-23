@@ -16,14 +16,14 @@ public class TransactionRequest implements Serializable{
     /**
      * 执行动作
      */
-    private int action;
+    private String action;
 
     /**
      * 执行数据发送任务key
      */
-    private String key;
+    private String requestId;
 
-    private int result;
+    private String result;
 
     private TransactionGroup transactionGroup;
 }

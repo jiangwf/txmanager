@@ -1,10 +1,10 @@
 package com.mljr.txmanager.remoting.netty;
 
-import com.mljr.txmanager.remoting.config.ClientConfig;
 import com.mljr.txmanager.remoting.codec.kryo.KryoDecoder;
 import com.mljr.txmanager.remoting.codec.kryo.KryoEncoder;
 import com.mljr.txmanager.remoting.codec.kryo.KryoMessageCoder;
 import com.mljr.txmanager.remoting.codec.kryo.KryoPoolFactory;
+import com.mljr.txmanager.remoting.config.ClientConfig;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;

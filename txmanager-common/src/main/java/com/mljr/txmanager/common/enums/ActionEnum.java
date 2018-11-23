@@ -10,37 +10,50 @@ import lombok.Setter;
  */
 public enum ActionEnum {
 
-    CREATE_TRANSACTION_GROUP(0,"创建事务组"),
+    CREATE_TRANSACTION_GROUP("create_transaction_group","创建事务组"),
 
-    ADD_TRANSACTION(1,"添加事务"),
+    ADD_TRANSACTION("add_transaction","添加事务"),
 
-    UPDATE_TRANSACTION(2,"更新事务"),
+    UPDATE_TRANSACTION("update_transaction","更新事务"),
 
-    PRE_COMMIT(3,"预提交"),
+    PRE_COMMIT("pre_commit","预提交"),
 
-    COMMIT(4,"提交"),
+    COMMIT("commit","提交"),
 
-    ROLLBACK(5,"回滚"),
+    ROLLBACK("rollback","回滚"),
 
-    FAIL(6,"失败"),
+    FAIL("fail","失败"),
 
-    HEART_BEAT(7,"心跳检测"),
+    HEART_BEAT("heart_beat","心跳检测"),
 
-    GET_TRANSDACTION_GROUP_STATUS(10,"获取事务组状态"),
+    GET_TRANSDACTION_GROUP_STATUS("get_transaction_group_status","获取事务组状态"),
 
-    FIND_TRANSACTION_GROUP(11,"查找事务组");
+    FIND_TRANSACTION_GROUP("find_transaction_group","查找事务组"),
+
+    RECEIVE("receive","接收");
 
     @Getter
     @Setter
-    private int code;
+    private String code;
 
     @Getter
     @Setter
     private String name;
 
-    ActionEnum(int code, String name) {
+    ActionEnum(String code, String name) {
         this.code = code;
         this.name = name;
+    }
+
+    public static ActionEnum get(String code){
+        ActionEnum actionEnum = null;
+        for (ActionEnum value : ActionEnum.values()) {
+            if(value.getCode().equals(code)){
+                actionEnum = value;
+                break;
+            }
+        }
+        return actionEnum;
     }
 
 }

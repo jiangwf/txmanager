@@ -57,7 +57,13 @@ public class ManagerServiceAdaptor implements ManagerService{
     }
 
     @Override
-    public int selectTransactionGroupStatus(String transactionGroupId) {
+    public String selectTransactionGroupStatus(String transactionGroupId) {
         return transactionMemoryDao.getTransactionGroup(transactionGroupId).getStatus();
+    }
+
+    @Override
+    public void updateTransactionGroupStatus(TransactionGroup transactionGroup) {
+        transactionMemoryDao.deleteTransactionGroup(transactionGroup.getTransactionId());
+        transactionMemoryDao.putTransactionGroup(transactionGroup);
     }
 }

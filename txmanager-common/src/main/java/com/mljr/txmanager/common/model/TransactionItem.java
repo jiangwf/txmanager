@@ -24,12 +24,12 @@ public class TransactionItem implements Serializable{
     /**
      * 事务状态
      */
-    private int status;
+    private String status;
 
     /**
      * 事务角色
      */
-    private int role;
+    private String role;
 
     /**
      * 事务组id
@@ -55,4 +55,9 @@ public class TransactionItem implements Serializable{
      * 操作结果信息
      */
     private Object result;
+
+    /**
+     * 客户端ip地主
+     */
+    private String remoteAddr;
 }

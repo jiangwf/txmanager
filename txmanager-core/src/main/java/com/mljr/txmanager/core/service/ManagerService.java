@@ -50,7 +50,13 @@ public interface ManagerService {
      * @param transactionGroupId
      * @return
      */
-    int selectTransactionGroupStatus(String transactionGroupId);
+    String selectTransactionGroupStatus(String transactionGroupId);
+
+    /**
+     * 更新事务组状态
+     * @param transactionGroup
+     */
+    public void updateTransactionGroupStatus(TransactionGroup transactionGroup);
 
 
 }

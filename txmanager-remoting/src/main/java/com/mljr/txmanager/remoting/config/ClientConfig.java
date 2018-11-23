@@ -30,7 +30,7 @@ public class ClientConfig {
     private boolean compensation = false;
 
     /**
-     * 执行失败最大重试次数
+     * 执行失败最大补偿处理重试次数
      */
     private int retryNum = 5;
 
