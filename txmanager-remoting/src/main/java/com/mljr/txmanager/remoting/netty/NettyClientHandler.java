@@ -6,6 +6,7 @@ import com.mljr.txmanager.common.enums.ResultEnum;
 import com.mljr.txmanager.common.model.TransactionGroup;
 import com.mljr.txmanager.common.model.TransactionItem;
 import com.mljr.txmanager.common.model.TransactionRequest;
+import com.mljr.txmanager.common.utils.IdUtil;
 import com.mljr.txmanager.core.ManagerContext;
 import com.mljr.txmanager.core.SpringUtil;
 import com.mljr.txmanager.remoting.config.ClientConfig;
@@ -14,6 +15,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,6 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: he.tian
@@ -36,6 +41,12 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
 
     @Setter
     private ClientConfig clientConfig;
+
+    @Getter
+    private volatile ChannelHandlerContext ctx;
+
+    @Autowired
+    private ScheduledExecutorService scheduledExecutorService;
 
     @Autowired
     private ManagerContext managerContext;
@@ -109,11 +120,11 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
 
     /**
      * 接受请求
-     * @param request
+     * @param transactionRequest
      */
-    private void receive(TransactionRequest request) {
-        Task task = managerContext.getTask(request.getTaskId());
-        task.setResult(ResultEnum.SUCCESS.getCode().equals(request.getResult()));
+    private void receive(TransactionRequest transactionRequest) {
+        Task task = managerContext.getTask(transactionRequest.getTaskId());
+        task.setResult(ResultEnum.SUCCESS.getCode().equals(transactionRequest.getResult()));
         task.singal();
     }
 
@@ -132,5 +143,39 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
                 SpringUtil.INSTANCE.getBean(NettyClient.class).doConnect();
             }
         }
+    }
+
+    public Object send(TransactionRequest request){
+        Object result = null;
+        if(ctx != null && ctx.channel() != null && ctx.channel().isActive()){
+            Task task = managerContext.getTask(IdUtil.getTaskId());
+            ctx.writeAndFlush(request);
+//            超时处理
+            ScheduledFuture<?> schedule = scheduledExecutorService.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    if (!task.isNotify()) {
+                        if (ActionEnum.GET_TRANSDACTION_GROUP_STATUS.getCode().equals(request.getAction())) {
+                            task.setResult(ResultEnum.TIMEOUT.getCode());
+                        } else if (ActionEnum.FIND_TRANSACTION_GROUP.getCode().equals(request.getAction())) {
+                            task.setResult(null);
+                        } else {
+                            task.setResult(false);
+                        }
+                        task.singal();
+                    }
+                }
+            }, clientConfig.getDelayTime(), TimeUnit.SECONDS);
+//            分布式事务线程阻塞
+            task.await();
+
+            if(!schedule.isDone()){
+                schedule.cancel(false);
+            }
+
+            result = task.getResult();
+            managerContext.getTashMap().remove(task.getTaskId());
+        }
+        return result;
     }
 }

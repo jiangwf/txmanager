@@ -13,7 +13,7 @@ public enum IdEnum {
 
     TRANSACTION_ITEM("ti","事务信息"),
 
-    TRANSACTION_REQUEST("tr","事务请求");
+    TASK("tr","事务请求");
 
     @Getter
     @Setter

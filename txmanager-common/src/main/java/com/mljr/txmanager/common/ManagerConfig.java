@@ -16,7 +16,7 @@ public class ManagerConfig {
 
     @Bean
     public ScheduledExecutorService getScheduledExecutorService() {
-        return Executors.newSingleThreadScheduledExecutor();
+        return Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
     @Bean

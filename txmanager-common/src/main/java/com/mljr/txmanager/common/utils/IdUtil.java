@@ -25,4 +25,8 @@ public abstract class IdUtil {
     public static String getTransactionGroupId(){
         return IdEnum.TRANSACTION_GROUP.getCode()+"-"+UUID.randomUUID().toString();
     }
+
+    public static String getTaskId(){
+        return IdEnum.TASK.getCode()+"-"+UUID.randomUUID().toString();
+    }
 }

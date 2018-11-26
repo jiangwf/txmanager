@@ -23,15 +23,19 @@ public class Task {
 
     private Object result;
 
+    private boolean notify;
+
     public Task(){
         lock = new ReentrantLock();
         condition = lock.newCondition();
+        setNotify(false);
     }
 
     public void singal(){
         try {
             lock.lock();
             condition.signal();
+            setNotify(true);
         }finally {
             lock.unlock();
         }

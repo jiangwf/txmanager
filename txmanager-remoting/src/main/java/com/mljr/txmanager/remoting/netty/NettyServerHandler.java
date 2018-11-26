@@ -1,6 +1,5 @@
 package com.mljr.txmanager.remoting.netty;
 
-import com.mljr.txmanager.common.utils.CommandHelper;
 import com.mljr.txmanager.common.ManagerConfig;
 import com.mljr.txmanager.common.NettyManager;
 import com.mljr.txmanager.common.enums.ActionEnum;
@@ -10,7 +9,7 @@ import com.mljr.txmanager.common.enums.TransactionStatusEnum;
 import com.mljr.txmanager.common.model.TransactionGroup;
 import com.mljr.txmanager.common.model.TransactionItem;
 import com.mljr.txmanager.common.model.TransactionRequest;
-import com.mljr.txmanager.common.utils.IdUtil;
+import com.mljr.txmanager.common.utils.CommandHelper;
 import com.mljr.txmanager.common.utils.RemotingHelper;
 import com.mljr.txmanager.core.service.ManagerService;
 import io.netty.channel.Channel;
@@ -146,17 +145,17 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     /**
      * 事务回滚，这里只有事务组的发起方执行失败会对整个事务组的事务进行回滚，否则事务组事务执行失败会执行正向补偿处理，超过最大补偿次数需要人工干预
      * @param ctx
-     * @param request
+     * @param transactionRequest
      */
-    private void executeRollback(ChannelHandlerContext ctx, TransactionRequest request) {
-        TransactionRequest transactionRequest = new TransactionRequest();
-        transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
-        transactionRequest.setTaskId(request.getTaskId());
-        transactionRequest.setAction(ActionEnum.ROLLBACK.getCode());
+    private void executeRollback(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
+        TransactionRequest request = new TransactionRequest();
+        request.setResult(ResultEnum.SUCCESS.getCode());
+        request.setTaskId(transactionRequest.getTaskId());
+        request.setAction(ActionEnum.ROLLBACK.getCode());
 //       事务回滚发起方本地事务已经回滚过，所以这里直接返回客户端
-        ctx.writeAndFlush(request);
+        ctx.writeAndFlush(transactionRequest);
 //       更新事务组状态
-        TransactionGroup transactionGroup = request.getTransactionGroup();
+        TransactionGroup transactionGroup = transactionRequest.getTransactionGroup();
         transactionGroup.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
         managerService.updateTransactionGroupStatus(transactionGroup);
         log.info("txManager 事务组id={}需要做回滚处理",transactionGroup.getTransactionId());
@@ -197,92 +196,82 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     /**
      * 心跳检测
      * @param ctx
-     * @param request
+     * @param transactionRequest
      */
-    private void executeHeartBeat(ChannelHandlerContext ctx, TransactionRequest request) {
-        TransactionRequest transactionRequest = new TransactionRequest();
-        transactionRequest.setAction(ActionEnum.HEART_BEAT.getCode());
-        transactionRequest.setTaskId(request.getTaskId());
+    private void executeHeartBeat(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
+        TransactionRequest request = new TransactionRequest();
+        request.setAction(ActionEnum.HEART_BEAT.getCode());
+        request.setTaskId(transactionRequest.getTaskId());
         ctx.writeAndFlush(request);
     }
 
     /**
      * 获取事务组信息
      * @param ctx
-     * @param request
+     * @param transactionRequest
      * @param transactionGroup
      */
-    private void executeGetTransactionGroupInfo(ChannelHandlerContext ctx, TransactionRequest request, TransactionGroup transactionGroup) {
-        TransactionRequest transactionRequest = new TransactionRequest();
-        transactionRequest.setAction(ActionEnum.FIND_TRANSACTION_GROUP.getCode());
-        transactionRequest.setTaskId(request.getTaskId());
-        transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
-        TransactionGroup group = new TransactionGroup();
+    private void executeGetTransactionGroupInfo(ChannelHandlerContext ctx, TransactionRequest transactionRequest, TransactionGroup transactionGroup) {
+        TransactionRequest request = new TransactionRequest();
+        request.setAction(ActionEnum.FIND_TRANSACTION_GROUP.getCode());
+        request.setTaskId(transactionRequest.getTaskId());
+        request.setResult(ResultEnum.SUCCESS.getCode());
         List<TransactionItem> transactionItemList = managerService.selectByTransactionGroupId(transactionGroup.getTransactionId());
-        group.setTransactionItemList(transactionItemList);
-        group.setTransactionId(transactionGroup.getTransactionId());
-        transactionRequest.setTransactionGroup(transactionGroup);
+        transactionGroup.setTransactionItemList(transactionItemList);
+        request.setTransactionGroup(transactionGroup);
         ctx.writeAndFlush(request);
     }
 
     /**
      * 获取事务组状态
      * @param ctx
-     * @param request
+     * @param transactionRequest
      * @param transactionGroup
      */
-    private void executeGetTransactionStatus(ChannelHandlerContext ctx, TransactionRequest request, TransactionGroup transactionGroup) {
-        TransactionRequest transactionRequest = new TransactionRequest();
-        TransactionGroup group = new TransactionGroup();
+    private void executeGetTransactionStatus(ChannelHandlerContext ctx, TransactionRequest transactionRequest, TransactionGroup transactionGroup) {
+        TransactionRequest request = new TransactionRequest();
         String status = managerService.selectTransactionGroupStatus(transactionGroup.getTransactionId());
-        group.setStatus(status);
-        group.setTransactionId(transactionGroup.getTransactionId());
-        transactionRequest.setTransactionGroup(transactionGroup);
-        transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
-        transactionRequest.setTaskId(request.getTaskId());
-        transactionRequest.setAction(ActionEnum.GET_TRANSDACTION_GROUP_STATUS.getCode());
-        ctx.writeAndFlush(transactionRequest);
+        transactionGroup.setStatus(status);
+        request.setTransactionGroup(transactionGroup);
+        request.setResult(ResultEnum.SUCCESS.getCode());
+        request.setTaskId(transactionRequest.getTaskId());
+        request.setAction(ActionEnum.GET_TRANSDACTION_GROUP_STATUS.getCode());
+        ctx.writeAndFlush(request);
     }
 
     /**
      * 添加事务
      * @param ctx
-     * @param request
+     * @param transactionRequest
      * @param transactionGroup
      */
-    private void executeAddTransaction(ChannelHandlerContext ctx, TransactionRequest request, TransactionGroup transactionGroup) {
-        TransactionRequest transactionRequest = new TransactionRequest();
-        TransactionGroup group = new TransactionGroup();
-        group.setTransactionId(IdUtil.getTransactionGroupId());
+    private void executeAddTransaction(ChannelHandlerContext ctx, TransactionRequest transactionRequest, TransactionGroup transactionGroup) {
+        TransactionRequest request = new TransactionRequest();
         List<TransactionItem> transactionItemList = transactionGroup.getTransactionItemList();
         if(CollectionUtils.isNotEmpty(transactionItemList)){
             TransactionItem transactionItem = transactionItemList.get(0);
             transactionItem.setRemoteAddr(RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
-            group.getTransactionItemList().add(transactionItem);
             managerService.addTransaction(transactionGroup.getTransactionId(),transactionItem);
         }
-        transactionRequest.setAction(ActionEnum.RECEIVE.getCode());
-        transactionRequest.setTaskId(request.getTaskId());
-        transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
-        ctx.writeAndFlush(transactionRequest);
+        request.setTransactionGroup(transactionGroup);
+        request.setAction(ActionEnum.RECEIVE.getCode());
+        request.setTaskId(transactionRequest.getTaskId());
+        request.setResult(ResultEnum.SUCCESS.getCode());
+        ctx.writeAndFlush(request);
     }
 
     /**
      * 创建事务组
      * @param ctx
-     * @param request
+     * @param transactionRequest
      */
-    private void executeCreateTransactionGroup(ChannelHandlerContext ctx, TransactionRequest request) {
-        TransactionRequest transactionRequest = new TransactionRequest();
-        TransactionGroup transactionGroup = new TransactionGroup();
-        transactionGroup.setTransactionId(IdUtil.getTransactionGroupId());
-        List<TransactionItem> transactionItemList = new ArrayList<>();
-        transactionGroup.setTransactionItemList(transactionItemList);
-        managerService.saveTransactionGroup(transactionGroup);
-        transactionRequest.setTransactionGroup(transactionGroup);
-        transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
-        transactionRequest.setAction(ActionEnum.RECEIVE.getCode());
-        ctx.writeAndFlush(transactionRequest);
+    private void executeCreateTransactionGroup(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
+        TransactionRequest request = new TransactionRequest();
+        managerService.saveTransactionGroup(transactionRequest.getTransactionGroup());
+        request.setTransactionGroup(transactionRequest.getTransactionGroup());
+        request.setResult(ResultEnum.SUCCESS.getCode());
+        request.setAction(ActionEnum.RECEIVE.getCode());
+        ctx.writeAndFlush(request);
     }
 
     @Override
