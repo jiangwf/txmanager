@@ -11,6 +11,6 @@ public class IdTest {
 
     @Test
     public void getId(){
-        System.out.println(IdUtil.getId());
+        System.out.println(IdUtil.getTransactionGroupId());
     }
 }

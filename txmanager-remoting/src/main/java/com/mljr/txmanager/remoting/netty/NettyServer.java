@@ -59,7 +59,7 @@ public class NettyServer{
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(serverChannelInitializer);
         } catch (Exception e) {
-            logger.error("netty server初始化失败",e);
+            logger.error("txManager netty server初始化失败",e);
         } finally {
         }
     }
@@ -74,8 +74,8 @@ public class NettyServer{
                 workerGroup.shutdownGracefully().await();
             }
         } catch (InterruptedException e) {
-            logger.error("netty服务停止失败={}",e);
-            throw new TransactionException("netty服务停止失败");
+            logger.error("txManager netty服务停止失败，异常信息={}",e);
+            throw new TransactionException("txManager netty服务停止失败");
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.mljr.txmanager;
 
 import com.mljr.txmanager.common.ManagerConfig;
-import com.mljr.txmanager.core.persistence.TransactionMemoryDao;
+import com.mljr.txmanager.core.dao.TransactionMemoryDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -25,7 +25,7 @@ public class ApplicationAware implements ApplicationContextAware{
         scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                log.info("内存中事务组信息======"+transactionMemoryDao.getTransactionGroupMap());
+                log.info("txManager 事务组信息={}"+transactionMemoryDao.getTransactionGroupMap());
             }
         },1,1, TimeUnit.MINUTES);
 
@@ -38,14 +38,14 @@ public class ApplicationAware implements ApplicationContextAware{
                 try {
                     shutdownScheduledExecutorService.awaitTermination(5,TimeUnit.MINUTES);
                 } catch (InterruptedException e) {
-                    log.error("关闭调度线程池失败，异常信息={}",e);
+                    log.error("txManager 关闭调度线程池失败，异常信息={}",e);
                 }
                 ExecutorService executeService = managerConfig.getExecuteService();
                 executeService.shutdown();
                 try {
                     executeService.awaitTermination(5,TimeUnit.MINUTES);
                 } catch (InterruptedException e) {
-                    log.error("关闭线程池失败，异常信息={}",e);
+                    log.error("txManager 关闭线程池失败，异常信息={}",e);
                 }
             }
         }));

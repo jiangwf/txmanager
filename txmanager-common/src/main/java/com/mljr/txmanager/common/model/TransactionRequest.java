@@ -21,7 +21,7 @@ public class TransactionRequest implements Serializable{
     /**
      * 执行数据发送任务key
      */
-    private String requestId;
+    private String taskId;
 
     private String result;
 

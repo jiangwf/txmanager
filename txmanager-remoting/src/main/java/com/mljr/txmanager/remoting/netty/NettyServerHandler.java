@@ -1,6 +1,6 @@
 package com.mljr.txmanager.remoting.netty;
 
-import com.mljr.txmanager.common.CommandHelper;
+import com.mljr.txmanager.common.utils.CommandHelper;
 import com.mljr.txmanager.common.ManagerConfig;
 import com.mljr.txmanager.common.NettyManager;
 import com.mljr.txmanager.common.enums.ActionEnum;
@@ -107,7 +107,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private void executePreCommit(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.RECEIVE.getCode());
-        request.setRequestId(transactionRequest.getRequestId());
+        request.setTaskId(transactionRequest.getTaskId());
         request.setResult(ResultEnum.SUCCESS.getCode());
         ctx.writeAndFlush(request);
         TransactionGroup transactionGroup = transactionRequest.getTransactionGroup();
@@ -131,7 +131,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     if(channel.isActive()){
                         channel.writeAndFlush(preCommitRequest);
                     }else{
-                        log.error("事务管理器执行事务提交失败");
+                        log.error("txManager 事务管理器执行事务提交失败");
                     }
                 }
             });
@@ -139,7 +139,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            log.error("事务管理器执行事务提交失败，异常信息={}",e);
+            log.error("txManager 事务管理器执行事务提交失败，异常信息={}",e);
         }
     }
 
@@ -151,7 +151,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private void executeRollback(ChannelHandlerContext ctx, TransactionRequest request) {
         TransactionRequest transactionRequest = new TransactionRequest();
         transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
-        transactionRequest.setRequestId(request.getRequestId());
+        transactionRequest.setTaskId(request.getTaskId());
         transactionRequest.setAction(ActionEnum.ROLLBACK.getCode());
 //       事务回滚发起方本地事务已经回滚过，所以这里直接返回客户端
         ctx.writeAndFlush(request);
@@ -159,7 +159,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         TransactionGroup transactionGroup = request.getTransactionGroup();
         transactionGroup.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
         managerService.updateTransactionGroupStatus(transactionGroup);
-        log.info("事务组id={}需要做回滚处理",transactionGroup.getTransactionId());
+        log.info("txManager 事务组id={}需要做回滚处理",transactionGroup.getTransactionId());
         List<TransactionItem> transactionItemList = managerService.selectByTransactionGroupId(transactionGroup.getTransactionId());
         List<TransactionItem> rollbackTransaqctionItemList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(transactionItemList)){
@@ -182,7 +182,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     if(channel.isActive()){
                         channel.writeAndFlush(rollbackRequest);
                     }else{
-                        log.error("事务管理器回滚失败，事务组id={}，事务id={}",transactionGroup.getTransactionId(),transactionItem.getTaskId());
+                        log.error("txManager 事务管理器回滚失败，事务组id={}，事务id={}",transactionGroup.getTransactionId(),transactionItem.getTaskId());
                     }
                 }
             });
@@ -190,7 +190,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            log.error("事务组事务回滚失败，异常信息={}",e);
+            log.error("txManager 事务组事务回滚失败，异常信息={}",e);
         }
     }
 
@@ -202,7 +202,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private void executeHeartBeat(ChannelHandlerContext ctx, TransactionRequest request) {
         TransactionRequest transactionRequest = new TransactionRequest();
         transactionRequest.setAction(ActionEnum.HEART_BEAT.getCode());
-        transactionRequest.setRequestId(request.getRequestId());
+        transactionRequest.setTaskId(request.getTaskId());
         ctx.writeAndFlush(request);
     }
 
@@ -215,7 +215,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private void executeGetTransactionGroupInfo(ChannelHandlerContext ctx, TransactionRequest request, TransactionGroup transactionGroup) {
         TransactionRequest transactionRequest = new TransactionRequest();
         transactionRequest.setAction(ActionEnum.FIND_TRANSACTION_GROUP.getCode());
-        transactionRequest.setRequestId(request.getRequestId());
+        transactionRequest.setTaskId(request.getTaskId());
         transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
         TransactionGroup group = new TransactionGroup();
         List<TransactionItem> transactionItemList = managerService.selectByTransactionGroupId(transactionGroup.getTransactionId());
@@ -239,7 +239,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         group.setTransactionId(transactionGroup.getTransactionId());
         transactionRequest.setTransactionGroup(transactionGroup);
         transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
-        transactionRequest.setRequestId(request.getRequestId());
+        transactionRequest.setTaskId(request.getTaskId());
         transactionRequest.setAction(ActionEnum.GET_TRANSDACTION_GROUP_STATUS.getCode());
         ctx.writeAndFlush(transactionRequest);
     }
@@ -262,7 +262,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             managerService.addTransaction(transactionGroup.getTransactionId(),transactionItem);
         }
         transactionRequest.setAction(ActionEnum.RECEIVE.getCode());
-        transactionRequest.setRequestId(request.getRequestId());
+        transactionRequest.setTaskId(request.getTaskId());
         transactionRequest.setResult(ResultEnum.SUCCESS.getCode());
         ctx.writeAndFlush(transactionRequest);
     }
@@ -287,7 +287,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("netty server出现异常");
+        log.error("txManager netty server出现异常");
         cause.printStackTrace();
         ctx.close();
     }
@@ -314,7 +314,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         if(NettyManager.getInstance().isAllowConnection()){
             NettyManager.getInstance().addChannel(ctx.channel());
         }else{
-            log.info("netty连接达到了最大连接数，连接关闭");
+            log.info("txManager netty连接达到了最大连接数，连接关闭");
             ctx.close();
         }
     }

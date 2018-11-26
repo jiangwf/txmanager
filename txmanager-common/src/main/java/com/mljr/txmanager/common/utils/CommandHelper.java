@@ -1,5 +1,6 @@
-package com.mljr.txmanager.common;
+package com.mljr.txmanager.common.utils;
 
+import com.mljr.txmanager.common.NettyManager;
 import com.mljr.txmanager.common.enums.ActionEnum;
 import com.mljr.txmanager.common.enums.TransactionStatusEnum;
 import com.mljr.txmanager.common.model.TransactionGroup;

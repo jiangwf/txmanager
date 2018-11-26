@@ -2,7 +2,7 @@
 
 <configuration>
 
-    <property name="LOG_HOME" value="logs/finance_detail" />
+    <property name="LOG_HOME" value="logs/txmanager" />
 	
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

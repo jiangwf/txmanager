@@ -21,6 +21,8 @@ public class Task {
 
     private Condition condition;
 
+    private Object result;
+
     public Task(){
         lock = new ReentrantLock();
         condition = lock.newCondition();
@@ -40,7 +42,7 @@ public class Task {
             lock.lock();
             condition.await();
         }catch (InterruptedException e){
-            log.error("同步处理task失败",e);
+            log.error("txManager 同步处理task失败",e);
         }finally {
             lock.unlock();
         }

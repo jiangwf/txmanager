@@ -1,4 +1,4 @@
-package com.mljr.txmanager.core.persistence;
+package com.mljr.txmanager.core.dao;
 
 import com.mljr.txmanager.common.model.TransactionGroup;
 import lombok.Getter;

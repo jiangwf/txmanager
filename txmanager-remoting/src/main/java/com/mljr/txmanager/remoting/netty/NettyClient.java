@@ -60,7 +60,7 @@ public class NettyClient{
                     .handler(clientHandherInitializer);
             doConnect();
         } catch (Exception e) {
-            logger.error("netty client初始化失败",e);
+            logger.error("txManager netty client初始化失败",e);
         }
     }
 
@@ -76,15 +76,15 @@ public class NettyClient{
             return;
         }
         ChannelFuture future = bootstrap.connect(clientConfig.getTxManagerHost(), clientConfig.getTxManagerPort());
-        logger.info("netty client连接netty server=======url={}", clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
+        logger.info("txManager netty client连接netty server，url={}", clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
         future.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture channelFuture) throws Exception {
                 if(channelFuture.isSuccess()){
                     channel = channelFuture.channel();
-                    logger.info("netty client连接netty server成功，url={}",clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
+                    logger.info("txManager netty client连接netty server成功，url={}",clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
                 }else{
-                    logger.info("netty client连接netty server失败，5s后重试,url={}",clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
+                    logger.info("txManager netty client连接netty server失败，5s后重试,url={}",clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
                     channelFuture.channel().eventLoop().schedule(NettyClient.this::doConnect,5, TimeUnit.SECONDS);
                 }
             }

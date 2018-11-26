@@ -15,6 +15,6 @@ public class TxManagerApplication {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(TxManagerApplication.class);
         application.run(args);
-        log.info("TxManagerApplication Server startup");
+        log.info("txManager Server startup");
     }
 }

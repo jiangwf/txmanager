@@ -2,7 +2,7 @@ package com.mljr.txmanager.core.service;
 
 import com.mljr.txmanager.common.model.TransactionGroup;
 import com.mljr.txmanager.common.model.TransactionItem;
-import com.mljr.txmanager.core.persistence.TransactionMemoryDao;
+import com.mljr.txmanager.core.dao.TransactionMemoryDao;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
