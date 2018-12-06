@@ -16,19 +16,19 @@ import java.util.Date;
 @Slf4j
 public abstract class TransactionHandler {
 
-  public abstract Object invoke();
+    public abstract Object invoke();
 
-  public TransactionItem buildTransactionItem(TransactionGroup group, String role) {
-    TransactionItem item = new TransactionItem();
-    item.setCreateDate(new Date());
-    try {
-      item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
-    } catch (UnknownHostException e) {
-      log.error("获取本机ip地址失败，异常信息={}",e);
+    public TransactionItem buildTransactionItem(TransactionGroup group, String role) {
+        TransactionItem item = new TransactionItem();
+        item.setCreateDate(new Date());
+        try {
+            item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            log.error("获取本机ip地址失败，异常信息={}", e);
+        }
+        item.setRole(role);
+        item.setTaskId(IdUtil.getTaskId());
+        item.setTransactionGroupId(group.getGroupId());
+        return item;
     }
-    item.setRole(role);
-    item.setTaskId(IdUtil.getTaskId());
-    item.setTransactionGroupId(group.getGroupId());
-    return item;
-  }
 }

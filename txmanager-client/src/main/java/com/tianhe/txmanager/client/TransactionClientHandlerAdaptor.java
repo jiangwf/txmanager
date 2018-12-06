@@ -6,8 +6,6 @@ import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.common.model.TransactionRequest;
 import com.tianhe.txmanager.remoting.netty.NettyClientHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -15,11 +13,13 @@ import java.util.Objects;
  * @author: he.tian
  * @time: 2018-11-26 17:45
  */
-@Component
 public class TransactionClientHandlerAdaptor implements TransactionClientHandler {
 
-    @Autowired
     private NettyClientHandler clientHandler;
+
+    public TransactionClientHandlerAdaptor(NettyClientHandler clientHandler){
+        this.clientHandler = clientHandler;
+    }
 
     @Override
     public boolean createTransactionGroup(TransactionGroup transactionGroup) {

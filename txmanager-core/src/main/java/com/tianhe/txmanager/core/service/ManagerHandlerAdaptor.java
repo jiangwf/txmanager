@@ -6,7 +6,7 @@ import com.tianhe.txmanager.core.store.SimpleStore;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -14,12 +14,16 @@ import java.util.List;
  * @author: he.tian
  * @time: 2018-11-22 14:28
  */
-@Service
 @Slf4j
-public class ManagerServiceAdaptor implements ManagerService{
+@Component
+public class ManagerHandlerAdaptor implements ManagerHandler {
 
     @Autowired
     private SimpleStore simpleStore;
+
+    public ManagerHandlerAdaptor(SimpleStore simpleStore){
+        this.simpleStore = simpleStore;
+    }
 
     @Override
     public void saveTransactionGroup(TransactionGroup transactionGroup) {
@@ -47,8 +51,8 @@ public class ManagerServiceAdaptor implements ManagerService{
         TransactionGroup transactionGroup = simpleStore.findTransactionGroup(transactionGroupId);
         List<TransactionItem> transactionItemList = transactionGroup.getTransactionItemList();
         for(TransactionItem transactionItem : transactionItemList) {
-            if(StringUtils.isNotEmpty(updateTransactionItem.getItemId()) && StringUtils.isNotEmpty(transactionItem.getItemId()) &&
-                    updateTransactionItem.getItemId().equals(transactionItem.getItemId())){
+            if(StringUtils.isNotEmpty(updateTransactionItem.getTaskId()) && StringUtils.isNotEmpty(transactionItem.getTaskId()) &&
+                    updateTransactionItem.getTaskId().equals(transactionItem.getTaskId())){
                 transactionItemList.remove(transactionItem);
                 transactionItemList.add(updateTransactionItem);
                 break;

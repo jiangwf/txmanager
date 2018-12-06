@@ -1,5 +1,6 @@
 package com.tianhe.txmanager.remoting.netty;
 
+import com.tianhe.txmanager.common.ScheduleExecutorServiceHelper;
 import com.tianhe.txmanager.common.Task;
 import com.tianhe.txmanager.common.enums.ActionEnum;
 import com.tianhe.txmanager.common.enums.ResultEnum;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -45,14 +45,13 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     @Getter
     private volatile ChannelHandlerContext ctx;
 
-    @Autowired
-    private ScheduledExecutorService scheduledExecutorService;
-
-    @Autowired
-    private ManagerContext managerContext;
-
-    @Autowired
     private SpringHelper springHelper;
+
+    @Autowired
+    public NettyClientHandler(ClientConfig clientConfig,SpringHelper springHelper){
+        this.clientConfig = clientConfig;
+        this.springHelper = springHelper;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -91,7 +90,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param request
      */
     private void findTransactionInfo(TransactionRequest request) {
-        Task task = managerContext.getTask(request.getTaskId());
+        Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
         task.setResult(request.getTransactionGroup());
         task.singal();
     }
@@ -101,7 +100,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param request
      */
     private void getTransactionGroupStatus(TransactionRequest request) {
-        Task task = managerContext.getTask(request.getTaskId());
+        Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
         TransactionGroup transactionGroup = request.getTransactionGroup();
         task.setResult(transactionGroup.getStatus());
         task.singal();
@@ -115,7 +114,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
         List<TransactionItem> transactionItemList = request.getTransactionGroup().getTransactionItemList();
         if(CollectionUtils.isNotEmpty(transactionItemList)){
             TransactionItem transactionItem = transactionItemList.get(0);
-            Task task = managerContext.getTask(transactionItem.getTaskId());
+            Task task = ManagerContext.INSTANCE.getTask(transactionItem.getTaskId());
             task.setResult(transactionItem.getStatus());
             task.singal();
         }
@@ -126,7 +125,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param transactionRequest
      */
     private void receive(TransactionRequest transactionRequest) {
-        Task task = managerContext.getTask(transactionRequest.getTaskId());
+        Task task = ManagerContext.INSTANCE.getTask(transactionRequest.getTaskId());
         task.setResult(ResultEnum.SUCCESS.getCode().equals(transactionRequest.getResult()));
         task.singal();
     }
@@ -151,10 +150,10 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     public Object send(TransactionRequest request){
         Object result = null;
         if(ctx != null && ctx.channel() != null && ctx.channel().isActive()){
-            Task task = managerContext.getTask(IdUtil.getTaskId());
+            Task task = ManagerContext.INSTANCE.getTask(IdUtil.getTaskId());
             ctx.writeAndFlush(request);
 //            超时处理
-            ScheduledFuture<?> schedule = scheduledExecutorService.schedule(new Runnable() {
+            ScheduledFuture<?> schedule = ScheduleExecutorServiceHelper.INSTANCE.schedule(new Runnable() {
                 @Override
                 public void run() {
                     if (!task.isNotify()) {
@@ -177,7 +176,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
             }
 
             result = task.getResult();
-            managerContext.getTaskMap().remove(task.getTaskId());
+            ManagerContext.INSTANCE.getTaskMap().remove(task.getTaskId());
         }
         return result;
     }

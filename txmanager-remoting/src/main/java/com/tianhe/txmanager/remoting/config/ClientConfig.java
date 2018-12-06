@@ -1,11 +1,13 @@
 package com.tianhe.txmanager.remoting.config;
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
-/**
+/** TODO 客户端注入spring容器
  * @author: he.tian
  * @time: 2018-11-01 17:38
  */
+@Component
 @Data
 public class ClientConfig {
 

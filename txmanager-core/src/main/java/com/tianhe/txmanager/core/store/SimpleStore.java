@@ -2,18 +2,18 @@ package com.tianhe.txmanager.core.store;
 
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import lombok.Getter;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
+/** TODO 由客户端注入spring容器
  * @author: he.tian
  * @time: 2018-10-17 11:28
  */
-@Repository
+@Component
 public class SimpleStore implements DataStore{
 
     @Getter
@@ -41,6 +41,7 @@ public class SimpleStore implements DataStore{
         }
     }
 
+    @Override
     public void deleteTransactionGroup(String transactionGroupId){
         lock.lock();
         try {

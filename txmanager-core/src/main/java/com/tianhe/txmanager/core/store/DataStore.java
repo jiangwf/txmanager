@@ -12,24 +12,24 @@ public interface DataStore {
      * 保存事务组
      * @param transactionGroup
      */
-    void save(TransactionGroup transactionGroup);
+    public void save(TransactionGroup transactionGroup);
 
     /**
      * 查询事务组
      * @param transactionGroupId
      * @return
      */
-    TransactionGroup findTransactionGroup(String transactionGroupId);
+    public TransactionGroup findTransactionGroup(String transactionGroupId);
 
     /**
      * 删除事务组
      * @param transactionGroupId
      */
-    void deleteTransactionGroup(String transactionGroupId);
+    public void deleteTransactionGroup(String transactionGroupId);
 
     /**
      * 更新事务组信息
      * @param transactionGroup
      */
-    void updateTransactionGroup(TransactionGroup transactionGroup);
+    public void updateTransactionGroup(TransactionGroup transactionGroup);
 }

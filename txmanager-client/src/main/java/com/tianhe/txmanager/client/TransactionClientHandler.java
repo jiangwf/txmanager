@@ -14,7 +14,7 @@ public interface TransactionClientHandler {
      * @param transactionGroup
      * @return
      */
-    boolean createTransactionGroup(TransactionGroup transactionGroup);
+   public boolean createTransactionGroup(TransactionGroup transactionGroup);
 
     /**
      * 添加事务
@@ -22,34 +22,34 @@ public interface TransactionClientHandler {
      * @param transactionItem
      * @return
      */
-    boolean addTransaction(String transactionGroupId, TransactionItem transactionItem);
+    public boolean addTransaction(String transactionGroupId, TransactionItem transactionItem);
 
     /**
      * 查找事务组状态
      * @param transactionGroupId
      * @return
      */
-    String findTransactionGroupStatus(String transactionGroupId);
+    public String findTransactionGroupStatus(String transactionGroupId);
 
     /**
      * 查找事务组信息
      * @param transactionGroupId
      * @return
      */
-    TransactionGroup findTransactionGroup(String transactionGroupId);
+    public TransactionGroup findTransactionGroup(String transactionGroupId);
 
     /**
      * 回滚事务组
      * @param transactionGroupId
      */
-    void rollbackTransactionGroup(String transactionGroupId);
+    public void rollbackTransactionGroup(String transactionGroupId);
 
     /**
      * 预提交
      * @param transactionGroupId
      * @return
      */
-    boolean preCommit(String transactionGroupId);
+    public boolean preCommit(String transactionGroupId);
 
     /**
      * 提交
@@ -58,7 +58,7 @@ public interface TransactionClientHandler {
      * @param status
      * @return
      */
-    boolean commit(String transactionGroupId,String itemId,String status);
+    public boolean commit(String transactionGroupId,String itemId,String status);
 
 
 }

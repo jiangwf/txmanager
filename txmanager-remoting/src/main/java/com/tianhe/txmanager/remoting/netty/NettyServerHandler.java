@@ -1,6 +1,6 @@
 package com.tianhe.txmanager.remoting.netty;
 
-import com.tianhe.txmanager.common.ManagerConfig;
+import com.tianhe.txmanager.common.ExecutorServiceHelper;
 import com.tianhe.txmanager.common.NettyManager;
 import com.tianhe.txmanager.common.enums.ActionEnum;
 import com.tianhe.txmanager.common.enums.ResultEnum;
@@ -11,7 +11,7 @@ import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.common.model.TransactionRequest;
 import com.tianhe.txmanager.common.utils.CommandHelper;
 import com.tianhe.txmanager.common.utils.RemotingHelper;
-import com.tianhe.txmanager.core.service.ManagerService;
+import com.tianhe.txmanager.core.service.ManagerHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @author: he.tian
@@ -41,10 +40,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ManagerService managerService;
-
-    @Autowired
-    private ManagerConfig managerConfig;
+    private ManagerHandler managerHandler;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -95,7 +91,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private void executeCommit(ChannelHandlerContext ctx, TransactionRequest request) {
         List<TransactionItem> transactionItemList = request.getTransactionGroup().getTransactionItemList();
         TransactionItem transactionItem = transactionItemList.get(0);
-        managerService.updateTransactionItem(request.getTransactionGroup().getGroupId(),transactionItem);
+        managerHandler.updateTransactionItem(request.getTransactionGroup().getGroupId(),transactionItem);
     }
 
     /**
@@ -111,18 +107,17 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         ctx.writeAndFlush(request);
         TransactionGroup transactionGroup = transactionRequest.getTransactionGroup();
         transactionGroup.setStatus(TransactionStatusEnum.COMMIT.getCode());
-        managerService.updateTransactionGroupStatus(transactionGroup);
-        List<TransactionItem> transactionItemList = managerService.selectByTransactionGroupId(transactionGroup.getGroupId());
+        managerHandler.updateTransactionGroupStatus(transactionGroup);
+        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId());
         List<TransactionItem> preCommitList = new ArrayList<>();
         for (TransactionItem transactionItem : transactionItemList) {
             if(RoleEnum.JOIN.getCode().equals(transactionItem.getRole())){
                 preCommitList.add(transactionItem);
             }
         }
-        ExecutorService executeService = managerConfig.getExecuteService();
         CountDownLatch countDownLatch = new CountDownLatch(preCommitList.size());
         for (TransactionItem transactionItem : preCommitList) {
-            executeService.execute(new Runnable() {
+            ExecutorServiceHelper.INSTANCE.execute(new Runnable() {
                 @Override
                 public void run() {
                     Channel channel = null;
@@ -157,9 +152,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 //       更新事务组状态
         TransactionGroup transactionGroup = transactionRequest.getTransactionGroup();
         transactionGroup.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
-        managerService.updateTransactionGroupStatus(transactionGroup);
+        managerHandler.updateTransactionGroupStatus(transactionGroup);
         log.info("txManager 事务组id={}需要做回滚处理",transactionGroup.getGroupId());
-        List<TransactionItem> transactionItemList = managerService.selectByTransactionGroupId(transactionGroup.getGroupId());
+        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId());
         List<TransactionItem> rollbackTransaqctionItemList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(transactionItemList)){
             for (TransactionItem transactionItem : transactionItemList) {
@@ -170,10 +165,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         }
 
 //        线程池去执行事务组中事务回滚 TODO 现在txManager支持单节点，如果后面是集群，这里最后还有去执行其他txManager中的事务组的事务信息回滚处理
-        ExecutorService executeService = managerConfig.getExecuteService();
         CountDownLatch countDownLatch = new CountDownLatch(rollbackTransaqctionItemList.size());
         for (TransactionItem transactionItem : rollbackTransaqctionItemList) {
-            executeService.execute(new Runnable() {
+            ExecutorServiceHelper.INSTANCE.execute(new Runnable() {
                 @Override
                 public void run() {
                     Channel channel = null;
@@ -181,7 +175,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     if(channel.isActive()){
                         channel.writeAndFlush(rollbackRequest);
                     }else{
-                        log.error("txManager 事务管理器回滚失败，事务组id={}，事务id={}",transactionGroup.getGroupId(),transactionItem.getItemId());
+                        log.error("txManager 事务管理器回滚失败，事务组id={}，事务id={}",transactionGroup.getGroupId(),transactionItem.getTaskId());
                     }
                 }
             });
@@ -216,7 +210,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         request.setAction(ActionEnum.FIND_TRANSACTION_GROUP.getCode());
         request.setTaskId(transactionRequest.getTaskId());
         request.setResult(ResultEnum.SUCCESS.getCode());
-        List<TransactionItem> transactionItemList = managerService.selectByTransactionGroupId(transactionGroup.getGroupId());
+        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId());
         transactionGroup.setTransactionItemList(transactionItemList);
         request.setTransactionGroup(transactionGroup);
         ctx.writeAndFlush(request);
@@ -230,7 +224,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     private void executeGetTransactionStatus(ChannelHandlerContext ctx, TransactionRequest transactionRequest, TransactionGroup transactionGroup) {
         TransactionRequest request = new TransactionRequest();
-        String status = managerService.selectTransactionGroupStatus(transactionGroup.getGroupId());
+        String status = managerHandler.selectTransactionGroupStatus(transactionGroup.getGroupId());
         transactionGroup.setStatus(status);
         request.setTransactionGroup(transactionGroup);
         request.setResult(ResultEnum.SUCCESS.getCode());
@@ -251,7 +245,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         if(CollectionUtils.isNotEmpty(transactionItemList)){
             TransactionItem transactionItem = transactionItemList.get(0);
             transactionItem.setRemoteAddr(RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
-            managerService.addTransaction(transactionGroup.getGroupId(),transactionItem);
+            managerHandler.addTransaction(transactionGroup.getGroupId(),transactionItem);
         }
         request.setTransactionGroup(transactionGroup);
         request.setAction(ActionEnum.RECEIVE.getCode());
@@ -267,7 +261,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     private void executeCreateTransactionGroup(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
         TransactionRequest request = new TransactionRequest();
-        managerService.saveTransactionGroup(transactionRequest.getTransactionGroup());
+        managerHandler.saveTransactionGroup(transactionRequest.getTransactionGroup());
         request.setTransactionGroup(transactionRequest.getTransactionGroup());
         request.setResult(ResultEnum.SUCCESS.getCode());
         request.setAction(ActionEnum.RECEIVE.getCode());

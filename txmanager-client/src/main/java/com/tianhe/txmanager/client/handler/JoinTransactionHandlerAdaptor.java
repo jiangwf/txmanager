@@ -5,7 +5,6 @@ import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.core.ManagerContext;
 import com.tianhe.txmanager.core.store.SimpleStore;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author: he.tian
@@ -13,11 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class JoinTransactionHandlerAdaptor extends TransactionHandler{
 
-    @Autowired
     private SimpleStore simpleStore;
 
-    @Autowired
     private ManagerContext managerContext;
+
+    public JoinTransactionHandlerAdaptor(SimpleStore simpleStore,ManagerContext managerContext){
+        this.simpleStore = simpleStore;
+        this.managerContext = managerContext;
+    }
 
     @Override
     public Object invoke() {
