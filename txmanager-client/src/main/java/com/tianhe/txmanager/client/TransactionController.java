@@ -1,11 +1,11 @@
-package com.tianhe.txmanager;
+package com.tianhe.txmanager.client;
 
 import com.tianhe.txmanager.common.ManagerConfig;
-import com.tianhe.txmanager.core.dao.TransactionMemoryDao;
+import com.tianhe.txmanager.core.SpringHelper;
+import com.tianhe.txmanager.core.store.SimpleStore;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,26 +13,29 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author: he.tian
- * @time: 2018-11-22 14:47
+ * @time: 2018-12-06 10:57
  */
+@Component
 @Slf4j
-public class ApplicationAware implements ApplicationContextAware{
+public class TransactionController {
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        TransactionMemoryDao transactionMemoryDao = applicationContext.getBean(TransactionMemoryDao.class);
-        ScheduledExecutorService scheduledExecutorService = applicationContext.getBean(ScheduledExecutorService.class);
+    @Autowired
+    private SpringHelper springHelper;
+
+    public void start(){
+        SimpleStore simpleStore = springHelper.getBean(SimpleStore.class);
+        ScheduledExecutorService scheduledExecutorService = springHelper.getBean(ScheduledExecutorService.class);
         scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                log.info("txManager 事务组信息={}"+transactionMemoryDao.getTransactionGroupMap());
+                log.info("txManager 事务组信息={}"+simpleStore.getTransactionGroupMap());
             }
         },1,1, TimeUnit.MINUTES);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                ManagerConfig managerConfig = applicationContext.getBean(ManagerConfig.class);
+                ManagerConfig managerConfig = springHelper.getBean(ManagerConfig.class);
                 ScheduledExecutorService shutdownScheduledExecutorService = managerConfig.getScheduledExecutorService();
                 shutdownScheduledExecutorService.shutdown();
                 try {

@@ -7,7 +7,7 @@ import com.tianhe.txmanager.common.model.TransactionItem;
  * @author: he.tian
  * @time: 2018-11-26 17:45
  */
-public interface TransactionService {
+public interface TransactionClientHandler {
 
     /**
      * 创建事务组
@@ -58,7 +58,7 @@ public interface TransactionService {
      * @param status
      * @return
      */
-    boolean commit(String transactionGroupId,String taskId,String status);
+    boolean commit(String transactionGroupId,String itemId,String status);
 
 
 }

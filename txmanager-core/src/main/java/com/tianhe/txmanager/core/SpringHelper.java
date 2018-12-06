@@ -10,13 +10,9 @@ import org.springframework.stereotype.Component;
  * @time: 2018-11-01 17:53
  */
 @Component
-public class SpringUtil implements ApplicationContextAware{
-
-    public static final SpringUtil INSTANCE = new SpringUtil();
+public class SpringHelper implements ApplicationContextAware{
 
     private ApplicationContext applicationContext;
-
-    private SpringUtil(){}
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

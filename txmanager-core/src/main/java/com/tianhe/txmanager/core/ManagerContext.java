@@ -1,11 +1,13 @@
 package com.tianhe.txmanager.core;
 
 import com.tianhe.txmanager.common.Task;
+import com.tianhe.txmanager.common.model.TransactionGroup;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author: he.tian
@@ -15,16 +17,22 @@ import java.util.concurrent.ConcurrentHashMap;
 @Data
 public class ManagerContext {
 
-    private ConcurrentHashMap<String,Task> tashMap = new ConcurrentHashMap(512);
+    private ConcurrentMap<String,Task> taskMap = new ConcurrentHashMap(512);
 
+    private ConcurrentMap<Thread,TransactionGroup> transactionGroupMap = new ConcurrentHashMap(512);
+
+    /**
+     * 获取task TODO 缓存这块后续优化
+     * @param taskId
+     * @return
+     */
     public Task getTask(String taskId){
-        Task task = tashMap.get(taskId);
-        if(Objects.isNull(task)){
-            Task putTask = new Task();
-            putTask.setTaskId(taskId);
-            tashMap.put(taskId,putTask);
-            return putTask;
+        if(Objects.isNull(taskMap.get(taskId))){
+            Task task = new Task();
+            task.setTaskId(taskId);
+            taskMap.put(taskId,task);
+            return task;
         }
-        return task;
+        return taskMap.get(taskId);
     }
 }

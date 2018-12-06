@@ -8,7 +8,7 @@ import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.common.model.TransactionRequest;
 import com.tianhe.txmanager.common.utils.IdUtil;
 import com.tianhe.txmanager.core.ManagerContext;
-import com.tianhe.txmanager.core.SpringUtil;
+import com.tianhe.txmanager.core.SpringHelper;
 import com.tianhe.txmanager.remoting.config.ClientConfig;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -50,6 +50,9 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
 
     @Autowired
     private ManagerContext managerContext;
+
+    @Autowired
+    private SpringHelper springHelper;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -133,14 +136,14 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
         if(IdleStateEvent.class.isAssignableFrom(evt.getClass())){
             IdleStateEvent event = (IdleStateEvent) evt;
             if(event.state() == IdleState.READER_IDLE){
-                SpringUtil.INSTANCE.getBean(NettyClient.class).doConnect();
+                springHelper.getBean(NettyClient.class).doConnect();
             }else if (event.state() == IdleState.WRITER_IDLE){
                 TransactionRequest transactionRequest = new TransactionRequest();
                 transactionRequest.setAction(ActionEnum.HEART_BEAT.getCode());
                 ctx.writeAndFlush(transactionRequest);
                 logger.info("txManager 发送事务管理器心跳检测");
             }else if(event.state() == IdleState.ALL_IDLE){
-                SpringUtil.INSTANCE.getBean(NettyClient.class).doConnect();
+                springHelper.getBean(NettyClient.class).doConnect();
             }
         }
     }
@@ -174,7 +177,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
             }
 
             result = task.getResult();
-            managerContext.getTashMap().remove(task.getTaskId());
+            managerContext.getTaskMap().remove(task.getTaskId());
         }
         return result;
     }

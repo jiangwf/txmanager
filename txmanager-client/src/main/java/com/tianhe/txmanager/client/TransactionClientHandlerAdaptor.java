@@ -16,7 +16,7 @@ import java.util.Objects;
  * @time: 2018-11-26 17:45
  */
 @Component
-public class TransactionAdaptor implements TransactionService{
+public class TransactionClientHandlerAdaptor implements TransactionClientHandler {
 
     @Autowired
     private NettyClientHandler clientHandler;
@@ -53,7 +53,7 @@ public class TransactionAdaptor implements TransactionService{
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.GET_TRANSDACTION_GROUP_STATUS.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setTransactionId(transactionGroupId);
+        group.setGroupId(transactionGroupId);
         request.setTransactionGroup(group);
         Object send = clientHandler.send(request);
         if(Objects.nonNull(send)){
@@ -67,7 +67,7 @@ public class TransactionAdaptor implements TransactionService{
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.FIND_TRANSACTION_GROUP.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setTransactionId(transactionGroupId);
+        group.setGroupId(transactionGroupId);
         request.setTransactionGroup(group);
         Object send = clientHandler.send(request);
         if(Objects.nonNull(send)){
@@ -81,7 +81,7 @@ public class TransactionAdaptor implements TransactionService{
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.ROLLBACK.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setTransactionId(transactionGroupId);
+        group.setGroupId(transactionGroupId);
         request.setTransactionGroup(group);
         clientHandler.send(request);
     }
@@ -91,7 +91,7 @@ public class TransactionAdaptor implements TransactionService{
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.PRE_COMMIT.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setTransactionId(transactionGroupId);
+        group.setGroupId(transactionGroupId);
         request.setTransactionGroup(group);
         Object send = clientHandler.send(request);
         if(Objects.nonNull(send)){
@@ -105,7 +105,7 @@ public class TransactionAdaptor implements TransactionService{
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.COMMIT.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setTransactionId(transactionGroupId);
+        group.setGroupId(transactionGroupId);
         TransactionItem item = new TransactionItem();
         item.setTaskId(taskId);
         item.setStatus(status);

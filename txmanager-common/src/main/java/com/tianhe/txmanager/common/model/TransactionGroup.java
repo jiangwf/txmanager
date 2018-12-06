@@ -17,7 +17,7 @@ public class TransactionGroup implements Serializable{
     /**
      * 事务组id
      */
-    private String transactionId;
+    private String groupId;
 
     /**
      * 事务状态

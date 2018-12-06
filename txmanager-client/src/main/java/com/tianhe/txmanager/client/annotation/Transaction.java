@@ -1,4 +1,4 @@
-package com.tianhe.txmanager.client.anotation;
+package com.tianhe.txmanager.client.annotation;
 
 import java.lang.annotation.*;
 
@@ -9,6 +9,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DistributedTransation {
+public @interface Transaction {
 
 }
