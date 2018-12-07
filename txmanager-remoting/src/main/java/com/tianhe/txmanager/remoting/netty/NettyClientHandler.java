@@ -40,18 +40,14 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Setter
+    @Autowired
     private ClientConfig clientConfig;
 
     @Getter
     private volatile ChannelHandlerContext ctx;
 
-    private SpringHelper springHelper;
-
     @Autowired
-    public NettyClientHandler(ClientConfig clientConfig,SpringHelper springHelper){
-        this.clientConfig = clientConfig;
-        this.springHelper = springHelper;
-    }
+    private SpringHelper springHelper;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

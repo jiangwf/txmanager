@@ -30,19 +30,15 @@ public class NettyServer{
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
     private ServerConfig serverConfig;
 
+    @Autowired
     private ServerChannelInitializer serverChannelInitializer;
 
     private EventLoopGroup bossGroup;
 
     private EventLoopGroup workerGroup;
-
-    @Autowired
-    public NettyServer(ServerConfig serverConfig, ServerChannelInitializer serverChannelInitializer){
-        this.serverConfig = serverConfig;
-        this.serverChannelInitializer = serverChannelInitializer;
-    }
 
     @PostConstruct
     public void start(){

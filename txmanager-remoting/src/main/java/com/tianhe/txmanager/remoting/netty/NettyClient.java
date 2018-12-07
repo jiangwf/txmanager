@@ -31,19 +31,15 @@ public class NettyClient{
 
     private EventLoopGroup workerGroup;
 
+    @Autowired
     private ClientHandherInitializer clientHandherInitializer;
 
+    @Autowired
     private ClientConfig clientConfig;
 
     private Channel channel;
 
     private Bootstrap bootstrap;
-
-    @Autowired
-    public NettyClient(ClientHandherInitializer clientHandherInitializer,ClientConfig clientConfig){
-        this.clientHandherInitializer = clientHandherInitializer;
-        this.clientConfig = clientConfig;
-    }
 
     @PostConstruct
     public void start(){

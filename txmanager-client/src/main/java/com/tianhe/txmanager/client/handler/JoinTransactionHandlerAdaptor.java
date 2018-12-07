@@ -5,25 +5,26 @@ import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.core.ManagerContext;
 import com.tianhe.txmanager.core.store.SimpleStore;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author: he.tian
  * @time: 2018-12-06 10:47
  */
+@Service
 public class JoinTransactionHandlerAdaptor extends TransactionHandler{
 
+    @Autowired
     private SimpleStore simpleStore;
 
-    private ManagerContext managerContext;
-
-    public JoinTransactionHandlerAdaptor(SimpleStore simpleStore,ManagerContext managerContext){
+    public JoinTransactionHandlerAdaptor(SimpleStore simpleStore){
         this.simpleStore = simpleStore;
-        this.managerContext = managerContext;
     }
 
     @Override
     public Object invoke() {
-        TransactionGroup group = managerContext.getTransactionGroupMap().get(Thread.currentThread());
+        TransactionGroup group = ManagerContext.INSTANCE.getTransactionGroupMap().get(Thread.currentThread());
         TransactionItem item = buildTransactionItem(group, RoleEnum.JOIN.getCode());
         group.getTransactionItemList().add(item);
         simpleStore.updateTransactionGroup(group);

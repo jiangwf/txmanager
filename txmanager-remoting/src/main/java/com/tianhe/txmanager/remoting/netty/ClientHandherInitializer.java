@@ -12,6 +12,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,19 +21,16 @@ import java.util.concurrent.TimeUnit;
  * @author: he.tian
  * @time: 2018-11-01 17:25
  */
+@Component
 public class ClientHandherInitializer extends ChannelInitializer<SocketChannel>{
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
     private ClientConfig clientConfig;
 
-    private NettyClientHandler nettyClientHandler;
-
     @Autowired
-    public ClientHandherInitializer(ClientConfig clientConfig,NettyClientHandler nettyClientHandler){
-        this.clientConfig = clientConfig;
-        this.nettyClientHandler = nettyClientHandler;
-    }
+    private NettyClientHandler nettyClientHandler;
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {

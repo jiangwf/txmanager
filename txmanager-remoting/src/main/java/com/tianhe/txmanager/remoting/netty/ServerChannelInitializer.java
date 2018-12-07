@@ -23,12 +23,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ServerChannelInitializer extends ChannelInitializer<SocketChannel>{
 
-    private ServerConfig nettyConfig;
-
     @Autowired
-    public ServerChannelInitializer(ServerConfig nettyConfig) {
-        this.nettyConfig = nettyConfig;
-    }
+    private ServerConfig nettyConfig;
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {

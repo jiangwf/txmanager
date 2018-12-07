@@ -6,7 +6,7 @@ import com.tianhe.txmanager.core.store.SimpleStore;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * @time: 2018-11-22 14:28
  */
 @Slf4j
-@Component
+@Service
 public class ManagerHandlerAdaptor implements ManagerHandler {
 
     @Autowired

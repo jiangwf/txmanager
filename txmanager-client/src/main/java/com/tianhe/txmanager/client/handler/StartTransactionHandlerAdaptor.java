@@ -7,6 +7,8 @@ import com.tianhe.txmanager.common.utils.IdUtil;
 import com.tianhe.txmanager.core.ManagerContext;
 import com.tianhe.txmanager.core.store.SimpleStore;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +18,14 @@ import java.util.List;
  * @time: 2018-12-04 15:19
  */
 @Slf4j
+@Service
 public class StartTransactionHandlerAdaptor extends TransactionHandler {
 
+    @Autowired
     private SimpleStore simpleStore;
 
-    private ManagerContext managerContext;
-
-    public StartTransactionHandlerAdaptor(SimpleStore simpleStore,ManagerContext managerContext){
+    public StartTransactionHandlerAdaptor(SimpleStore simpleStore){
         this.simpleStore = simpleStore;
-        this.managerContext = managerContext;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class StartTransactionHandlerAdaptor extends TransactionHandler {
         transactionItemList.add(item);
         group.setTransactionItemList(transactionItemList);
         simpleStore.save(group);
-        managerContext.getTransactionGroupMap().put(Thread.currentThread(),group);
+        ManagerContext.INSTANCE.getTransactionGroupMap().put(Thread.currentThread(),group);
         return item;
     }
 }
