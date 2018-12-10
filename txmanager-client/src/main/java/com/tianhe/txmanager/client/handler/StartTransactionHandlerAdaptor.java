@@ -1,11 +1,11 @@
 package com.tianhe.txmanager.client.handler;
 
-import com.tianhe.txmanager.common.enums.RoleEnum;
+import com.tianhe.txmanager.client.TransactionClientHandlerAdaptor;
+import com.tianhe.txmanager.common.enums.TransactionStatusEnum;
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.common.utils.IdUtil;
 import com.tianhe.txmanager.core.ManagerContext;
-import com.tianhe.txmanager.core.store.SimpleStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,22 +22,31 @@ import java.util.List;
 public class StartTransactionHandlerAdaptor extends TransactionHandler {
 
     @Autowired
-    private SimpleStore simpleStore;
+    private TransactionClientHandlerAdaptor transactionClientHandlerAdaptor;
 
-    public StartTransactionHandlerAdaptor(SimpleStore simpleStore){
-        this.simpleStore = simpleStore;
-    }
-
-    @Override
-    public Object invoke() {
+    public boolean saveTransactionGroup(String taskId) {
         TransactionGroup group = new TransactionGroup();
-        group.setGroupId(IdUtil.getTransactionId());
+        group.setGroupId(IdUtil.getTransactionGroupId());
         List<TransactionItem> transactionItemList = new ArrayList<>();
-        TransactionItem item = super.buildTransactionItem(group,RoleEnum.START.getCode());
+        TransactionItem groupItem = super.buildGroupItem(group);
+        transactionItemList.add(groupItem);
+        TransactionItem item = super.buildTransactionItem(group,taskId);
         transactionItemList.add(item);
         group.setTransactionItemList(transactionItemList);
-        simpleStore.save(group);
-        ManagerContext.INSTANCE.getTransactionGroupMap().put(Thread.currentThread(),group);
-        return item;
+        boolean saveTransactionGroup = transactionClientHandlerAdaptor.createTransactionGroup(group);
+        ManagerContext.INSTANCE.setGroupId(group.getGroupId());
+        return saveTransactionGroup;
+    }
+
+    public boolean preCommit(String groupId) {
+        return transactionClientHandlerAdaptor.preCommit(groupId);
+    }
+
+    public void completeCommit(String taskId) {
+        transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(),taskId, TransactionStatusEnum.COMMIT.getCode());
+    }
+
+    public void rollback() {
+        transactionClientHandlerAdaptor.rollbackTransactionGroup(ManagerContext.INSTANCE.getGroupId());
     }
 }

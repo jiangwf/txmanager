@@ -81,6 +81,7 @@ public class TransactionClientHandlerAdaptor implements TransactionClientHandler
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.ROLLBACK.getCode());
         TransactionGroup group = new TransactionGroup();
+        group.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
         group.setGroupId(transactionGroupId);
         request.setTransactionGroup(group);
         clientHandler.send(request);
@@ -103,7 +104,7 @@ public class TransactionClientHandlerAdaptor implements TransactionClientHandler
     @Override
     public boolean commit(String transactionGroupId, String taskId, String status) {
         TransactionRequest request = new TransactionRequest();
-        request.setAction(ActionEnum.COMMIT.getCode());
+        request.setAction(ActionEnum.COMPLETE_COMMIT.getCode());
         TransactionGroup group = new TransactionGroup();
         group.setGroupId(transactionGroupId);
         TransactionItem item = new TransactionItem();

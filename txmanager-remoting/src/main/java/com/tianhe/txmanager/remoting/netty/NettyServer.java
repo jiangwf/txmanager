@@ -1,6 +1,6 @@
 package com.tianhe.txmanager.remoting.netty;
 
-import com.tianhe.txmanager.remoting.TransactionException;
+import com.tianhe.txmanager.common.exception.TransactionException;
 import com.tianhe.txmanager.remoting.config.ServerConfig;
 import com.sun.javafx.PlatformUtil;
 import io.netty.bootstrap.ServerBootstrap;

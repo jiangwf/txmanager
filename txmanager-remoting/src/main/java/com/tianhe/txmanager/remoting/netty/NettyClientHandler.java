@@ -64,7 +64,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
                case ROLLBACK:
                    execute(request);
                    break;
-               case COMMIT:
+               case COMPLETE_COMMIT:
                    execute(request);
                    break;
                case GET_TRANSDACTION_GROUP_STATUS:

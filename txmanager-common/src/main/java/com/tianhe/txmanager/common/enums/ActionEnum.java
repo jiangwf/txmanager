@@ -18,7 +18,7 @@ public enum ActionEnum {
 
     PRE_COMMIT("pre_commit","预提交"),
 
-    COMMIT("commit","提交"),
+    COMPLETE_COMMIT("complete_commit","完成提交"),
 
     ROLLBACK("rollback","回滚"),
 

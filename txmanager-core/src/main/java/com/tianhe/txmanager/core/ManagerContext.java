@@ -1,7 +1,8 @@
 package com.tianhe.txmanager.core;
 
 import com.tianhe.txmanager.common.Task;
-import com.tianhe.txmanager.common.model.TransactionGroup;
+import com.tianhe.txmanager.common.exception.TransactionException;
+import com.tianhe.txmanager.common.utils.StringUtil;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class ManagerContext {
     private ConcurrentMap<String,Task> taskMap = new ConcurrentHashMap(512);
 
     @Getter
-    private ConcurrentMap<Thread,TransactionGroup> transactionGroupMap = new ConcurrentHashMap(512);
+    private ThreadLocal<String> groupIdThreadLocal = new ThreadLocal<>();
 
     private ManagerContext(){}
 
@@ -38,4 +39,19 @@ public class ManagerContext {
         }
         return getTaskMap().get(taskId);
     }
+
+   public String getGroupId(){
+        return groupIdThreadLocal.get();
+   }
+
+   public void setGroupId(String groupId){
+       if(StringUtil.isNotEmpty(groupIdThreadLocal.get())){
+           throw new TransactionException("当前线程存在groupId");
+       }
+       groupIdThreadLocal.set(groupId);
+   }
+
+   public void removeGroupId(){
+        groupIdThreadLocal.remove();
+   }
 }

@@ -1,8 +1,10 @@
 package com.tianhe.txmanager.client.handler;
 
+import com.tianhe.txmanager.common.enums.RoleEnum;
+import com.tianhe.txmanager.common.enums.TransactionStatusEnum;
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
-import com.tianhe.txmanager.common.utils.IdUtil;
+import com.tianhe.txmanager.core.ManagerContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
@@ -16,19 +18,31 @@ import java.util.Date;
 @Slf4j
 public abstract class TransactionHandler {
 
-    public abstract Object invoke();
-
-    public TransactionItem buildTransactionItem(TransactionGroup group, String role) {
+    public TransactionItem buildGroupItem(TransactionGroup group) {
         TransactionItem item = new TransactionItem();
+        item.setStatus(TransactionStatusEnum.BEGIN.getCode());
         item.setCreateDate(new Date());
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
             log.error("获取本机ip地址失败，异常信息={}", e);
         }
-        item.setRole(role);
-        item.setTaskId(IdUtil.getTaskId());
+        item.setRole(RoleEnum.GROUP.getCode());
+        item.setTaskId(group.getGroupId());
+        return item;
+    }
+
+    public TransactionItem buildTransactionItem(TransactionGroup group,String taskId) {
+        TransactionItem item = new TransactionItem();
+        item.setTaskId(taskId);
+        item.setRole(RoleEnum.START.getCode());
+        item.setStatus(TransactionStatusEnum.BEGIN.getCode());
         item.setTransactionGroupId(group.getGroupId());
         return item;
+    }
+
+    public void release(String taskId){
+        ManagerContext.INSTANCE.getTaskMap().remove(taskId);
+        ManagerContext.INSTANCE.removeGroupId();
     }
 }

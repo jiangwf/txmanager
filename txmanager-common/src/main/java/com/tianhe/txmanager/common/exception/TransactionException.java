@@ -1,4 +1,4 @@
-package com.tianhe.txmanager.remoting;
+package com.tianhe.txmanager.common.exception;
 
 /**
  * @author: he.tian

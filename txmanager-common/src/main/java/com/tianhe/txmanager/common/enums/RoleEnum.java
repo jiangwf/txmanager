@@ -11,7 +11,9 @@ public enum RoleEnum {
 
     START("start","发起者"),
 
-    JOIN("join","参与者");
+    JOIN("join","参与者"),
+
+    GROUP("group","事务组");
 
     @Getter
     @Setter

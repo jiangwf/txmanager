@@ -45,4 +45,9 @@ public class ClientConfig {
      * txManager事务管理器port
      */
     private Integer txManagerPort;
+
+    /**
+     * 是否使用txManager分布式事务
+     */
+    private boolean useTxTransaction;
 }
