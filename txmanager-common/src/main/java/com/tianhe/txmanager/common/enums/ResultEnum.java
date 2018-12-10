@@ -9,11 +9,11 @@ import lombok.Setter;
  */
 public enum ResultEnum {
 
-    SUCCESS("success","成功"),
+    SUCCESS("SUCCESS","成功"),
 
-    FAIL("fail","失败"),
+    FAIL("FAIL","失败"),
 
-    TIMEOUT("timeout","网络超时");
+    TIME_OUT("TIME_OUT","网络超时");
 
     @Getter
     @Setter

@@ -46,7 +46,7 @@ public class ManagerContext {
 
    public void setGroupId(String groupId){
        if(StringUtil.isNotEmpty(groupIdThreadLocal.get())){
-           throw new TransactionException("当前线程存在groupId");
+           throw new TransactionException("txManager 设置事务组id="+groupId+"，当前线程已存在");
        }
        groupIdThreadLocal.set(groupId);
    }

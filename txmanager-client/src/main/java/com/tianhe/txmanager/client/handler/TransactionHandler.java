@@ -25,7 +25,7 @@ public abstract class TransactionHandler {
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
-            log.error("获取本机ip地址失败，异常信息={}", e);
+            log.error("txManager 构建事务组groupItem，获取本机ip地址失败，异常信息={}", e);
         }
         item.setRole(RoleEnum.GROUP.getCode());
         item.setTaskId(group.getGroupId());
@@ -41,7 +41,7 @@ public abstract class TransactionHandler {
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
-            log.error("获取本机ip地址失败，异常信息={}", e);
+            log.error("txManager 构建事务组startItem，获取本机ip地址失败，异常信息={}", e);
         }
         item.setCreateDate(new Date());
         return item;
@@ -62,7 +62,7 @@ public abstract class TransactionHandler {
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
-            log.error("获取本机ip地址失败，异常信息={}", e);
+            log.error("txManager 构建事务组joinItem，获取本机ip地址失败，异常信息={}", e);
         }
         return item;
     }

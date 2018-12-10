@@ -53,7 +53,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
        TransactionRequest request = (TransactionRequest) msg;
        ActionEnum actionEnum = ActionEnum.get(request.getAction());
-       log.info("netty客户端接收到了={}请求",actionEnum.getName());
+       log.info("txManager netty客户端接收到了={}请求",actionEnum.getName());
        try {
            switch (actionEnum){
                case HEART_BEAT:
@@ -86,6 +86,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param request
      */
     private void findTransactionInfo(TransactionRequest request) {
+        log.info("txManager client处理查找事务信息请求");
         Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
         task.setResult(request.getTransactionGroup());
         task.singal();
@@ -96,6 +97,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param request
      */
     private void getTransactionGroupStatus(TransactionRequest request) {
+        log.info("txManager client处理查找事务组状态请求");
         Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
         TransactionGroup transactionGroup = request.getTransactionGroup();
         task.setResult(transactionGroup.getStatus());
@@ -103,10 +105,11 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     }
 
     /**
-     * 事务回滚
+     * 事务提交或回滚
      * @param request
      */
     private void execute(TransactionRequest request) {
+        log.info("txManager client处理事务提交或回滚请求");
         List<TransactionItem> transactionItemList = request.getTransactionGroup().getTransactionItemList();
         if(CollectionUtils.isNotEmpty(transactionItemList)){
             TransactionItem transactionItem = transactionItemList.get(0);
@@ -121,6 +124,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param transactionRequest
      */
     private void receive(TransactionRequest transactionRequest) {
+        log.info("txManager client处理接收请求");
         Task task = ManagerContext.INSTANCE.getTask(transactionRequest.getTaskId());
         task.setResult(ResultEnum.SUCCESS.getCode().equals(transactionRequest.getResult()));
         task.singal();
@@ -136,7 +140,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
                 TransactionRequest transactionRequest = new TransactionRequest();
                 transactionRequest.setAction(ActionEnum.HEART_BEAT.getCode());
                 ctx.writeAndFlush(transactionRequest);
-                logger.info("txManager 发送事务管理器心跳检测");
+                logger.info("txManager 客户端发送事务管理器心跳检测");
             }else if(event.state() == IdleState.ALL_IDLE){
                 springHelper.getBean(NettyClient.class).doConnect();
             }
@@ -144,6 +148,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     }
 
     public Object send(TransactionRequest request){
+        log.info("txManager client发送事务请求");
         Object result = null;
         if(ctx != null && ctx.channel() != null && ctx.channel().isActive()){
             Task task = ManagerContext.INSTANCE.getTask(IdUtil.getTaskId());
@@ -154,7 +159,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
                 public void run() {
                     if (!task.isNotify()) {
                         if (ActionEnum.GET_TRANSDACTION_GROUP_STATUS.getCode().equals(request.getAction())) {
-                            task.setResult(ResultEnum.TIMEOUT.getCode());
+                            task.setResult(ResultEnum.TIME_OUT.getCode());
                         } else if (ActionEnum.FIND_TRANSACTION_GROUP.getCode().equals(request.getAction())) {
                             task.setResult(null);
                         } else {

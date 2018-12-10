@@ -31,7 +31,7 @@ public abstract class CommandHelper {
             transactionItem.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
             group.setStatus(ActionEnum.ROLLBACK.getCode());
         }else if(TransactionStatusEnum.COMMIT.getCode().equals(transactionStatusEnum.getCode())){
-            request.setAction(ActionEnum.COMMIT.getCode());
+            request.setAction(ActionEnum.COMPLETE_COMMIT.getCode());
             transactionItem.setStatus(TransactionStatusEnum.COMMIT.getCode());
             group.setStatus(TransactionStatusEnum.COMMIT.getCode());
         }

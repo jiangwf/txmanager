@@ -10,27 +10,27 @@ import lombok.Setter;
  */
 public enum ActionEnum {
 
-    CREATE_TRANSACTION_GROUP("create_transaction_group","创建事务组"),
+    CREATE_TRANSACTION_GROUP("CREATE_TRANSACTION_GROUP","创建事务组"),
 
-    ADD_TRANSACTION("add_transaction","添加事务"),
+    ADD_TRANSACTION("ADD_TRANSACTION","添加事务"),
 
-    UPDATE_TRANSACTION("update_transaction","更新事务"),
+    UPDATE_TRANSACTION("UPDATE_TRANSACTION","更新事务"),
 
-    PRE_COMMIT("pre_commit","预提交"),
+    PRE_COMMIT("PRE_COMMIT","预提交"),
 
-    COMPLETE_COMMIT("complete_commit","完成提交"),
+    COMPLETE_COMMIT("COMPLETE_COMMIT","完成提交"),
 
-    ROLLBACK("rollback","回滚"),
+    ROLLBACK("ROLLBACK","回滚"),
 
-    FAIL("fail","失败"),
+    FAIL("FAIL","失败"),
 
-    HEART_BEAT("heart_beat","心跳检测"),
+    HEART_BEAT("HEART_BEAT","心跳检测"),
 
-    GET_TRANSDACTION_GROUP_STATUS("get_transaction_group_status","获取事务组状态"),
+    GET_TRANSDACTION_GROUP_STATUS("GET_TRANSACTION_GROUP_STATUS","获取事务组状态"),
 
-    FIND_TRANSACTION_GROUP("find_transaction_group","查找事务组"),
+    FIND_TRANSACTION_GROUP("FIND_TRANSACTION_GROUP","查找事务组"),
 
-    RECEIVE("receive","接收");
+    RECEIVE("RECEIVE","接收");
 
     @Getter
     @Setter

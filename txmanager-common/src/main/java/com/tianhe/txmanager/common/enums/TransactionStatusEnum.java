@@ -9,19 +9,19 @@ import lombok.Setter;
  */
 public enum TransactionStatusEnum {
 
-    BEGIN("begin","开始"),
+    BEGIN("BEGIN","开始"),
 
-    RUNNING("running","执行中"),
+    RUNNING("RUNNING","执行中"),
 
-    LOCK("lock","锁定"),
+    LOCK("LOCK","锁定"),
 
-    PRE_COMMIT("pre_commit","预提交"),
+    PRE_COMMIT("PRE_COMMIT","预提交"),
 
-    COMMIT("commit","提交"),
+    COMMIT("COMMIT","提交"),
 
-    ROLLBACK("rollback","回滚"),
+    ROLLBACK("ROLLBACK","回滚"),
 
-    FAIL("fail","失败");
+    FAIL("FAIL","失败");
 
     @Getter
     @Setter

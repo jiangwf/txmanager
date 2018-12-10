@@ -35,6 +35,7 @@ public class Task {
         try {
             lock.lock();
             condition.signal();
+            log.info("txManager 事务组事务taskId={}释放锁",taskId);
             setNotify(true);
         }finally {
             lock.unlock();
@@ -45,6 +46,7 @@ public class Task {
         try {
             lock.lock();
             condition.await();
+            log.info("txManager 事务组事务taskId={}获取锁",taskId);
         }catch (InterruptedException e){
             log.error("txManager 同步处理task失败",e);
         }finally {

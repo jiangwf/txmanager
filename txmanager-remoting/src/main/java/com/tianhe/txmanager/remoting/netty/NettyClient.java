@@ -43,6 +43,7 @@ public class NettyClient{
 
     @PostConstruct
     public void start(){
+        logger.info("txManager netty client启动");
         try {
             workerGroup = PlatformUtil.isLinux() ? new EpollEventLoopGroup(clientConfig.getThreads()) : new NioEventLoopGroup(clientConfig.getThreads());
             bootstrap = new Bootstrap();
@@ -56,12 +57,13 @@ public class NettyClient{
                     .handler(clientHandherInitializer);
             doConnect();
         } catch (Exception e) {
-            logger.error("txManager netty client初始化失败",e);
+            logger.error("txManager netty client启动失败",e);
         }
     }
 
     @PreDestroy
     public void stop() throws Exception {
+        logger.info("txManager netty client停止");
         if(workerGroup != null){
             workerGroup.shutdownGracefully();
         }

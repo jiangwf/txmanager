@@ -4,7 +4,6 @@ import com.tianhe.txmanager.client.TransactionClientHandlerAdaptor;
 import com.tianhe.txmanager.common.enums.TransactionStatusEnum;
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
-import com.tianhe.txmanager.common.utils.IdUtil;
 import com.tianhe.txmanager.core.ManagerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,9 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
     @Autowired
     private TransactionClientHandlerAdaptor transactionClientHandlerAdaptor;
 
-    public boolean saveTransactionGroup(String taskId) {
+    public boolean saveTransactionGroup(String taskId,String transactionGroupId) {
         TransactionGroup group = new TransactionGroup();
-        group.setGroupId(IdUtil.getTransactionGroupId());
+        group.setGroupId(transactionGroupId);
         List<TransactionItem> transactionItemList = new ArrayList<>();
         TransactionItem groupItem = super.buildGroupItem(group);
         transactionItemList.add(groupItem);
@@ -42,8 +41,8 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
         return transactionClientHandlerAdaptor.preCommit(groupId);
     }
 
-    public void completeCommit(String taskId) {
-        transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(),taskId, TransactionStatusEnum.COMMIT.getCode());
+    public boolean completeCommit(String taskId) {
+        return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(), taskId, TransactionStatusEnum.COMMIT.getCode());
     }
 
     public void rollbackTransactionGroup() {
@@ -58,11 +57,11 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
         return transactionClientHandlerAdaptor.findTransactionGroupStatus(groupId);
     }
 
-    public void rollbackTransactionItem(String taskId) {
-        transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(),taskId,TransactionStatusEnum.ROLLBACK.getCode());
+    public boolean rollbackTransactionItem(String taskId) {
+        return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(), taskId, TransactionStatusEnum.ROLLBACK.getCode());
     }
 
-    public void fail(String taskId) {
-        transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(),taskId,TransactionStatusEnum.FAIL.getCode());
+    public boolean fail(String taskId) {
+       return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(), taskId, TransactionStatusEnum.FAIL.getCode());
     }
 }

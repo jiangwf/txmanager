@@ -9,11 +9,11 @@ import lombok.Setter;
  */
 public enum IdEnum {
 
-    TRANSACTION_GROUP("10","事务组"),
+    TRANSACTION_GROUP("TRANSACTION_GROUP","事务组"),
 
-    TRANSACTION_ITEM("20","事务信息"),
+    TRANSACTION_ITEM("TRANSACTION_ITEM","事务信息"),
 
-    TASK("30","事务请求");
+    TASK("TASK","事务请求");
 
     @Getter
     @Setter

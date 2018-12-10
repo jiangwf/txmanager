@@ -42,6 +42,7 @@ public class NettyServer{
 
     @PostConstruct
     public void start(){
+        logger.info("txManager netty server启动");
          bossGroup = PlatformUtil.isLinux() ? new EpollEventLoopGroup(serverConfig.getThreads()) : new NioEventLoopGroup(serverConfig.getThreads());
          workerGroup = PlatformUtil.isLinux() ? new EpollEventLoopGroup(serverConfig.getThreads()) : new NioEventLoopGroup(serverConfig.getThreads());
         try {
@@ -55,13 +56,14 @@ public class NettyServer{
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(serverChannelInitializer);
         } catch (Exception e) {
-            logger.error("txManager netty server初始化失败",e);
+            logger.error("txManager netty server启动失败",e);
         } finally {
         }
     }
 
     @PreDestroy
     public void stop(){
+        logger.info("txManager netty server停止");
         try {
             if(bossGroup != null){
                 bossGroup.shutdownGracefully().await();
@@ -70,8 +72,8 @@ public class NettyServer{
                 workerGroup.shutdownGracefully().await();
             }
         } catch (InterruptedException e) {
-            logger.error("txManager netty服务停止失败，异常信息={}",e);
-            throw new TransactionException("txManager netty服务停止失败");
+            logger.error("txManager netty server停止失败，异常信息={}",e);
+            throw new TransactionException("txManager netty server停止失败");
         }
     }
 }

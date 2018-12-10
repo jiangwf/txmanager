@@ -9,11 +9,11 @@ import lombok.Setter;
  */
 public enum RoleEnum {
 
-    START("start","发起者"),
+    START("START","发起者"),
 
-    JOIN("join","参与者"),
+    JOIN("JOIN","参与者"),
 
-    GROUP("group","事务组");
+    GROUP("GROUP","事务组");
 
     @Getter
     @Setter
