@@ -32,12 +32,18 @@ public abstract class TransactionHandler {
         return item;
     }
 
-    public TransactionItem buildTransactionItem(TransactionGroup group,String taskId) {
+    public TransactionItem buildStartTransactionItem(TransactionGroup group,String taskId) {
         TransactionItem item = new TransactionItem();
         item.setTaskId(taskId);
         item.setRole(RoleEnum.START.getCode());
         item.setStatus(TransactionStatusEnum.BEGIN.getCode());
         item.setTransactionGroupId(group.getGroupId());
+        try {
+            item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            log.error("获取本机ip地址失败，异常信息={}", e);
+        }
+        item.setCreateDate(new Date());
         return item;
     }
 
@@ -45,4 +51,20 @@ public abstract class TransactionHandler {
         ManagerContext.INSTANCE.getTaskMap().remove(taskId);
         ManagerContext.INSTANCE.removeGroupId();
     }
+
+    public TransactionItem buildJoinTransactionItem(String taskId){
+        TransactionItem item = new TransactionItem();
+        item.setTaskId(taskId);
+        item.setStatus(TransactionStatusEnum.BEGIN.getCode());
+        item.setRole(RoleEnum.JOIN.getCode());
+        item.setTransactionGroupId(ManagerContext.INSTANCE.getGroupId());
+        item.setCreateDate(new Date());
+        try {
+            item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            log.error("获取本机ip地址失败，异常信息={}", e);
+        }
+        return item;
+    }
+
 }

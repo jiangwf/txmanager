@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class StartTransactionHandlerAdaptor extends TransactionHandler {
+public class TransactionHandlerAdaptor extends TransactionHandler {
 
     @Autowired
     private TransactionClientHandlerAdaptor transactionClientHandlerAdaptor;
@@ -30,7 +30,7 @@ public class StartTransactionHandlerAdaptor extends TransactionHandler {
         List<TransactionItem> transactionItemList = new ArrayList<>();
         TransactionItem groupItem = super.buildGroupItem(group);
         transactionItemList.add(groupItem);
-        TransactionItem item = super.buildTransactionItem(group,taskId);
+        TransactionItem item = super.buildStartTransactionItem(group,taskId);
         transactionItemList.add(item);
         group.setTransactionItemList(transactionItemList);
         boolean saveTransactionGroup = transactionClientHandlerAdaptor.createTransactionGroup(group);
@@ -46,7 +46,23 @@ public class StartTransactionHandlerAdaptor extends TransactionHandler {
         transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(),taskId, TransactionStatusEnum.COMMIT.getCode());
     }
 
-    public void rollback() {
+    public void rollbackTransactionGroup() {
         transactionClientHandlerAdaptor.rollbackTransactionGroup(ManagerContext.INSTANCE.getGroupId());
+    }
+
+    public boolean addTransaction(String taskId) {
+        return transactionClientHandlerAdaptor.addTransaction(ManagerContext.INSTANCE.getGroupId(), super.buildJoinTransactionItem(taskId));
+    }
+
+    public String findTransactionGroupStatus(String groupId) {
+        return transactionClientHandlerAdaptor.findTransactionGroupStatus(groupId);
+    }
+
+    public void rollbackTransactionItem(String taskId) {
+        transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(),taskId,TransactionStatusEnum.ROLLBACK.getCode());
+    }
+
+    public void fail(String taskId) {
+        transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(),taskId,TransactionStatusEnum.FAIL.getCode());
     }
 }
