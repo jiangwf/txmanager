@@ -69,7 +69,7 @@
         </dependency>
         <dependency>
             <groupId>com.tianhe</groupId>
-            <artifactId>txmanager-remoting</artifactId>
+            <artifactId>txmanager-server</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
