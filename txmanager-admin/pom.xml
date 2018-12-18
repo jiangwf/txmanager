@@ -65,7 +65,7 @@
         </dependency>
         <dependency>
             <groupId>com.tianhe</groupId>
-            <artifactId>txmanager-client</artifactId>
+            <artifactId>txmanager-server</artifactId>
             <version>${txmanager.version}</version>
         </dependency>
     </dependencies>
