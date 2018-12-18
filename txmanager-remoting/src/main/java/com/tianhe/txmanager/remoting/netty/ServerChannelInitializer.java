@@ -24,7 +24,10 @@ import java.util.concurrent.TimeUnit;
 public class ServerChannelInitializer extends ChannelInitializer<SocketChannel>{
 
     @Autowired
-    private ServerConfig nettyConfig;
+    private ServerConfig serverConfig;
+
+    @Autowired
+    private NettyServerHandler nettyServerHandler;
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
@@ -33,7 +36,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel>{
         KryoMessageCoder kryoMessageCoder = new KryoMessageCoder(KryoPoolFactory.getKryoPoolInstance());
         pipeline.addLast(new KryoEncoder(kryoMessageCoder));
         pipeline.addLast(new KryoDecoder(kryoMessageCoder));
-        pipeline.addLast("timeout",new IdleStateHandler(nettyConfig.getHeartTime(),nettyConfig.getHeartTime(),nettyConfig.getHeartTime(), TimeUnit.SECONDS));
-        pipeline.addLast(new NettyServerHandler());
+        pipeline.addLast("timeout",new IdleStateHandler(serverConfig.getHeartTime(),serverConfig.getHeartTime(),serverConfig.getHeartTime(), TimeUnit.SECONDS));
+        pipeline.addLast(nettyServerHandler);
     }
 }

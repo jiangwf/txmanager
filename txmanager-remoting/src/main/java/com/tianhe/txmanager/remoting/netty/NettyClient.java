@@ -1,7 +1,7 @@
 package com.tianhe.txmanager.remoting.netty;
 
-import com.tianhe.txmanager.remoting.config.ClientConfig;
 import com.sun.javafx.PlatformUtil;
+import com.tianhe.txmanager.remoting.config.ClientConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -74,7 +74,9 @@ public class NettyClient{
             return;
         }
         ChannelFuture future = bootstrap.connect(clientConfig.getTxManagerHost(), clientConfig.getTxManagerPort());
+        logger.info("====================================================");
         logger.info("txManager netty client连接netty server，url={}", clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
+        logger.info("====================================================");
         future.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture channelFuture) throws Exception {

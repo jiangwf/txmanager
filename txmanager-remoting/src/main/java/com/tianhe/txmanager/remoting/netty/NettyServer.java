@@ -14,7 +14,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import java.net.InetAddress;
  * @time: 2018-10-15 14:46
  */
 @Service
-@Setter
 public class NettyServer{
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -59,7 +57,9 @@ public class NettyServer{
                     .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(serverChannelInitializer);
+            logger.info("====================================================");
             logger.info("netty server启动，ip地址={},端口号={}", InetAddress.getLocalHost().getHostAddress(),serverConfig.getPort());
+            logger.info("====================================================");
             ChannelFuture channelFuture = serverBootstrap.bind(serverConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
