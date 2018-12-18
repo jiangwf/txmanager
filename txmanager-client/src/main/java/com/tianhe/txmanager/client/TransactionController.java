@@ -1,5 +1,6 @@
 package com.tianhe.txmanager.client;
 
+import com.tianhe.txmanager.client.config.ClientConfig;
 import com.tianhe.txmanager.client.handler.TransactionHandlerAdaptor;
 import com.tianhe.txmanager.common.ScheduleExecutorServiceHelper;
 import com.tianhe.txmanager.common.Task;
@@ -7,7 +8,6 @@ import com.tianhe.txmanager.common.enums.ResultEnum;
 import com.tianhe.txmanager.common.enums.TransactionStatusEnum;
 import com.tianhe.txmanager.common.utils.IdUtil;
 import com.tianhe.txmanager.core.ManagerContext;
-import com.tianhe.txmanager.remoting.config.ClientConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
