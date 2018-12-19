@@ -3,6 +3,7 @@ package com.tianhe.txmanager.common.model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,5 +25,5 @@ public class TransactionGroup implements Serializable{
      */
     private String status;
 
-    private List<TransactionItem> transactionItemList;
+    private List<TransactionItem> transactionItemList = new ArrayList<>();
 }

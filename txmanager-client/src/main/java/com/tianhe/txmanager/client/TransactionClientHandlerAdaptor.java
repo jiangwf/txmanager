@@ -36,11 +36,10 @@ public class TransactionClientHandlerAdaptor implements TransactionClientHandler
     @Override
     public boolean addTransaction(String transactionGroupId, TransactionItem transactionItem) {
         TransactionRequest request = new TransactionRequest();
-        request.setAction(ActionEnum.FIND_TRANSACTION_GROUP.getCode());
-        TransactionGroup transactionGroup = (TransactionGroup) clientHandler.send(request);
         request.setAction(ActionEnum.ADD_TRANSACTION.getCode());
-        transactionGroup.getTransactionItemList().add(transactionItem);
-        request.setTransactionGroup(transactionGroup);
+        TransactionGroup group = new TransactionGroup();
+        group.getTransactionItemList().add(transactionItem);
+        request.setTransactionGroup(group);
         Object send = clientHandler.send(request);
         if(Objects.nonNull(send)){
             return (boolean) send;
