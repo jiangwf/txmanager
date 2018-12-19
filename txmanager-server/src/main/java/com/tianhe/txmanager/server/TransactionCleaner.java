@@ -29,7 +29,7 @@ public class TransactionCleaner {
                 log.info("=======================================");
                 log.info("txManager 事务组信息={}"+simpleStore.getTransactionGroupMap().values());
             }
-        },1,1, TimeUnit.SECONDS);
+        },5,5, TimeUnit.SECONDS);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override

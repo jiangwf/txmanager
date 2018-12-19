@@ -1,7 +1,8 @@
-package com.tianhe.txmanager.example;
+package com.tianhe.txmanager.example.controller;
 
 import com.tianhe.txmanager.client.remoting.netty.NettyClientHandler;
 import com.tianhe.txmanager.common.enums.ActionEnum;
+import com.tianhe.txmanager.example.RequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +16,17 @@ import java.util.Map;
  * @time: 2018-12-19 15:45
  */
 @Controller
-@RequestMapping("remoting")
 public class RemotingController {
 
     @Autowired
     private NettyClientHandler clientHandler;
 
-    @RequestMapping("/send")
+    @RequestMapping("/html")
+   public String send(){
+       return "remoting/send";
+   }
+
+    @RequestMapping("/remoting")
     @ResponseBody
     public Map<String,Object> send(String input){
         Map<String,Object> map = new HashMap();
