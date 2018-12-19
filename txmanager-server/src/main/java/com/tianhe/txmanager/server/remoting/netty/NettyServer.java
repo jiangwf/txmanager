@@ -59,7 +59,6 @@ public class NettyServer{
                     .childHandler(serverChannelInitializer);
             logger.info("====================================================");
             logger.info("netty server启动，ip地址={},端口号={}", InetAddress.getLocalHost().getHostAddress(),serverConfig.getPort());
-            logger.info("====================================================");
             ChannelFuture channelFuture = serverBootstrap.bind(serverConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {

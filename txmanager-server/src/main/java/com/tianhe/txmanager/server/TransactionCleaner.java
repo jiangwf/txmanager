@@ -1,4 +1,4 @@
-package com.tianhe.txmanager.client;
+package com.tianhe.txmanager.server;
 
 import com.tianhe.txmanager.common.ExecutorServiceHelper;
 import com.tianhe.txmanager.common.ScheduleExecutorServiceHelper;
@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,13 +23,13 @@ public class TransactionCleaner {
 
     public void start(){
         SimpleStore simpleStore = springHelper.getBean(SimpleStore.class);
-        ScheduledExecutorService scheduledExecutorService = springHelper.getBean(ScheduledExecutorService.class);
-        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+        ScheduleExecutorServiceHelper.INSTANCE.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                log.info("txManager 事务组信息={}"+simpleStore.getTransactionGroupMap());
+                log.info("=======================================");
+                log.info("txManager 事务组信息={}"+simpleStore.getTransactionGroupMap().values());
             }
-        },1,1, TimeUnit.MINUTES);
+        },1,1, TimeUnit.SECONDS);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override

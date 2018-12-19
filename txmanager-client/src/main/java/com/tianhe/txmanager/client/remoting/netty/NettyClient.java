@@ -47,7 +47,8 @@ public class NettyClient{
         try {
             workerGroup = PlatformUtil.isLinux() ? new EpollEventLoopGroup(clientConfig.getThreads()) : new NioEventLoopGroup(clientConfig.getThreads());
             bootstrap = new Bootstrap();
-            bootstrap.channel(PlatformUtil.isLinux() ? EpollSocketChannel.class : NioSocketChannel.class);
+            bootstrap.group(workerGroup)
+            .channel(PlatformUtil.isLinux() ? EpollSocketChannel.class : NioSocketChannel.class);
             bootstrap.option(ChannelOption.SO_BACKLOG,1024)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS,5)
                     .option(ChannelOption.SO_KEEPALIVE,true)
@@ -75,16 +76,15 @@ public class NettyClient{
         }
         ChannelFuture future = bootstrap.connect(clientConfig.getTxManagerHost(), clientConfig.getTxManagerPort());
         logger.info("====================================================");
-        logger.info("txManager netty client连接netty server，url={}", clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
-        logger.info("====================================================");
+        logger.info("txManager netty client连接netty server，url={}", clientConfig.getTxManagerHost()+":"+clientConfig.getTxManagerPort());
         future.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture channelFuture) throws Exception {
                 if(channelFuture.isSuccess()){
                     channel = channelFuture.channel();
-                    logger.info("txManager netty client连接netty server成功，url={}",clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
+                    logger.info("txManager netty client连接netty server成功，url={}",clientConfig.getTxManagerHost()+":"+clientConfig.getTxManagerPort());
                 }else{
-                    logger.info("txManager netty client连接netty server失败，5s后重试,url={}",clientConfig.getTxManagerHost()+clientConfig.getTxManagerPort());
+                    logger.info("txManager netty client连接netty server失败，5s后重试,url={}",clientConfig.getTxManagerHost()+":"+clientConfig.getTxManagerPort());
                     channelFuture.channel().eventLoop().schedule(NettyClient.this::doConnect,5, TimeUnit.SECONDS);
                 }
             }

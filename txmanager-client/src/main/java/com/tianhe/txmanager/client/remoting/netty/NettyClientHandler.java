@@ -12,6 +12,7 @@ import com.tianhe.txmanager.common.utils.CollectionUtil;
 import com.tianhe.txmanager.common.utils.IdUtil;
 import com.tianhe.txmanager.core.ManagerContext;
 import com.tianhe.txmanager.core.SpringHelper;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 @Slf4j
+@ChannelHandler.Sharable
 public class NettyClientHandler extends ChannelInboundHandlerAdapter{
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -180,5 +182,11 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
             ManagerContext.INSTANCE.getTaskMap().remove(task.getTaskId());
         }
         return result;
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+        this.ctx = ctx;
     }
 }

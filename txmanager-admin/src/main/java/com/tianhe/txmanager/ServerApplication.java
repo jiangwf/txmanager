@@ -10,10 +10,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @Slf4j
-public class Application {
+public class ServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(Application.class);
+        SpringApplication application = new SpringApplication(ServerApplication.class);
         application.run(args);
         log.info("txManager Server startup");
     }
