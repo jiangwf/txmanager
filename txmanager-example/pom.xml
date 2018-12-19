@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
@@ -8,13 +10,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>txmanager-example</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
-    <name>txmanager-example</name>
-    <url>http://maven.apache.org</url>
+    <name>txmanager-example Maven Webapp</name>
+    <url>http://www.example.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <txmanager.version>1.0.0-SNAPSHOT</txmanager.version>
     </properties>
 
@@ -67,4 +71,5 @@
             <version>${txmanager.version}</version>
         </dependency>
     </dependencies>
+
 </project>

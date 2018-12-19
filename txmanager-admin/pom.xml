@@ -10,8 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>txmanager-admin</artifactId>
+    <packaging>war</packaging>
 
-    <name>txmanager-admin</name>
+    <name>txmanager-admin Maven Webapp</name>
+    <url>http://www.example.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
