@@ -23,7 +23,7 @@ public class RemotingController {
 
     @RequestMapping("/remoting")
     @ResponseBody
-    public Map<String,Object> send(String input){
+    public Map<String,Object> send(String input,String group,String item){
         Map<String,Object> map = new HashMap();
         Object result = null;
         if(ActionEnum.HEART_BEAT.getCode().equals(input)){
@@ -33,22 +33,22 @@ public class RemotingController {
              result = clientHandler.send(RequestHelper.buildRequestCreateTransactionGroup());
         }
         if(ActionEnum.ADD_TRANSACTION.getCode().equals(input)){
-            result = clientHandler.send(RequestHelper.buildRequestAddTransaction());
+            result = clientHandler.send(RequestHelper.buildRequestAddTransaction(group));
         }
         if(ActionEnum.GET_TRANSDACTION_GROUP_STATUS.getCode().equals(input)){
-            result = clientHandler.send(RequestHelper.buildRequestFindTransactionGroupStatus());
+            result = clientHandler.send(RequestHelper.buildRequestFindTransactionGroupStatus(group));
         }
         if(ActionEnum.FIND_TRANSACTION_GROUP.getCode().equals(input)){
-            result = clientHandler.send(RequestHelper.buildRequestFindTransactionGroup());
+            result = clientHandler.send(RequestHelper.buildRequestFindTransactionGroup(group));
         }
         if(ActionEnum.ROLLBACK.getCode().equals(input)){
-            result = clientHandler.send(RequestHelper.buildRequestRollback());
+            result = clientHandler.send(RequestHelper.buildRequestRollback(group));
         }
         if(ActionEnum.PRE_COMMIT.getCode().equals(input)){
-            result = clientHandler.send(RequestHelper.buildRequestPrecommit());
+            result = clientHandler.send(RequestHelper.buildRequestPrecommit(group));
         }
         if(ActionEnum.COMPLETE_COMMIT.getCode().equals(input)){
-            result = clientHandler.send(RequestHelper.buildRequestCommit());
+            result = clientHandler.send(RequestHelper.buildRequestCommit(group,item));
         }
         map.put("result",result);
         return map;

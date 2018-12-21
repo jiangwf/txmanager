@@ -23,7 +23,7 @@ public interface ManagerHandler {
      * @param transactionGroupId
      * @param transactionItem
      */
-    public void addTransaction(String transactionGroupId, TransactionItem transactionItem);
+    public void addTransaction(TransactionGroup transactionGroup, TransactionItem transactionItem);
 
     /**
      * 根据事务组id获取事务组的事务项信息

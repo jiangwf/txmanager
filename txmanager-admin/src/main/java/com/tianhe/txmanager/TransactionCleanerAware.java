@@ -1,4 +1,4 @@
-package com.tianhe.txmanager.server;
+package com.tianhe.txmanager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

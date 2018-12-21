@@ -8,9 +8,11 @@
 
         function send() {
             var input = $('#input').val();
+            var group = $('#group').val();
+            var item = $('#item').val();
             $.post(
                 '/remoting.do',
-                {'input':input},
+                {'input':input,'group':group,'item':item},
                 function (data) {
                     alert(data.result);
                 }
@@ -21,8 +23,12 @@
 </head>
 <body>
 
-<input type="text" id="input"><br>
+transaction_type:<input type="text" id="input"><br>
+groupId:<input type="group" id="group"><br>
+groupId:<input type="item" id="item"><br><br>
 <button id="send" onclick="send()">发送</button>
+
+<br>
 
 </body>
 </html>

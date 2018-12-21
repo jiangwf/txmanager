@@ -1,7 +1,9 @@
-package com.tianhe.txmanager.server;
+package com.tianhe.txmanager;
 
 import com.tianhe.txmanager.common.ExecutorServiceHelper;
 import com.tianhe.txmanager.common.ScheduleExecutorServiceHelper;
+import com.tianhe.txmanager.common.model.TransactionGroup;
+import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.core.SpringHelper;
 import com.tianhe.txmanager.core.store.SimpleStore;
 import org.slf4j.Logger;
@@ -29,9 +31,16 @@ public class TransactionCleaner {
             @Override
             public void run() {
                 logger.info("=======================================");
-                logger.info("txManager 事务组信息={}"+simpleStore.getTransactionGroupMap().values());
+                logger.info("txManager 事务组信息===================");
+                for (TransactionGroup group:simpleStore.getTransactionGroupMap().values()){
+                    logger.info("事务组id={}",group.getGroupId());
+                    for (TransactionItem item : group.getTransactionItemList()) {
+                        logger.info("事务信息={}",item);
+                    }
+                }
+                logger.info("=======================================");
             }
-        },5,5, TimeUnit.SECONDS);
+        },2,2, TimeUnit.SECONDS);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override

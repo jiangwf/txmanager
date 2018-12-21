@@ -53,12 +53,13 @@ public class RequestHelper {
         return request;
     }
 
-    public static TransactionRequest buildRequestAddTransaction(){
+    //TODO 执行类、方法没有添加
+    public static TransactionRequest buildRequestAddTransaction(String groupId){
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.ADD_TRANSACTION.getCode());
 
         TransactionGroup group = new TransactionGroup();
-        group.setGroupId(IdUtil.getTransactionGroupId());
+        group.setGroupId(groupId);
         group.setStatus(TransactionStatusEnum.BEGIN.getCode());
 
         TransactionItem item = new TransactionItem();
@@ -69,7 +70,7 @@ public class RequestHelper {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        item.setRole(RoleEnum.GROUP.getCode());
+        item.setRole(RoleEnum.JOIN.getCode());
         item.setTaskId(group.getGroupId());
 
         group.getTransactionItemList().add(item);
@@ -77,51 +78,51 @@ public class RequestHelper {
         return request;
     }
 
-    public static TransactionRequest buildRequestFindTransactionGroupStatus(){
+    public static TransactionRequest buildRequestFindTransactionGroupStatus(String groupId){
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.GET_TRANSDACTION_GROUP_STATUS.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setGroupId("test");
+        group.setGroupId(groupId);
         request.setTransactionGroup(group);
         return request;
     }
 
-    public static TransactionRequest buildRequestFindTransactionGroup(){
+    public static TransactionRequest buildRequestFindTransactionGroup(String groupId){
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.FIND_TRANSACTION_GROUP.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setGroupId("test");
+        group.setGroupId(groupId);
         request.setTransactionGroup(group);
         return request;
     }
 
-    public static TransactionRequest buildRequestRollback(){
+    public static TransactionRequest buildRequestRollback(String groupId){
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.ROLLBACK.getCode());
         TransactionGroup group = new TransactionGroup();
         group.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
-        group.setGroupId("test");
+        group.setGroupId(groupId);
         request.setTransactionGroup(group);
         return request;
     }
 
-    public static TransactionRequest buildRequestPrecommit(){
+    public static TransactionRequest buildRequestPrecommit(String groupId){
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.PRE_COMMIT.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setGroupId("test");
+        group.setGroupId(groupId);
         request.setTransactionGroup(group);
         return request;
     }
 
-    public static TransactionRequest buildRequestCommit(){
+    public static TransactionRequest buildRequestCommit(String groupId,String itemId){
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.COMPLETE_COMMIT.getCode());
         TransactionGroup group = new TransactionGroup();
-        group.setGroupId("test");
+        group.setGroupId(groupId);
 
         TransactionItem item = new TransactionItem();
-        item.setTaskId("test");
+        item.setTaskId(itemId);
         item.setStatus(TransactionStatusEnum.COMMIT.getCode());
         group.getTransactionItemList().add(item);
         request.setTransactionGroup(group);

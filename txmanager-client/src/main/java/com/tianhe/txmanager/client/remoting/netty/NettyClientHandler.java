@@ -53,7 +53,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
        TransactionRequest request = (TransactionRequest) msg;
        ActionEnum actionEnum = ActionEnum.get(request.getAction());
-        logger.info("txManager netty客户端接收到了{}请求",actionEnum.getName());
+        logger.info("txManager netty客户端接收到了 {} 请求",actionEnum.getName());
        try {
            switch (actionEnum){
                case HEART_BEAT:

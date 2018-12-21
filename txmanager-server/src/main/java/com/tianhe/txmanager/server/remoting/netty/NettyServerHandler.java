@@ -251,7 +251,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         if(CollectionUtils.isNotEmpty(transactionItemList)){
             TransactionItem transactionItem = transactionItemList.get(0);
             transactionItem.setRemoteAddr(RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
-            managerHandler.addTransaction(transactionGroup.getGroupId(),transactionItem);
+            managerHandler.addTransaction(transactionGroup,transactionItem);
         }
         request.setTransactionGroup(transactionGroup);
         request.setAction(ActionEnum.RECEIVE.getCode());
@@ -270,6 +270,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         TransactionRequest request = new TransactionRequest();
         managerHandler.saveTransactionGroup(transactionRequest.getTransactionGroup());
         request.setTransactionGroup(transactionRequest.getTransactionGroup());
+        request.setTaskId(transactionRequest.getTaskId());
         request.setResult(ResultEnum.SUCCESS.getCode());
         request.setAction(ActionEnum.RECEIVE.getCode());
         ctx.writeAndFlush(request);

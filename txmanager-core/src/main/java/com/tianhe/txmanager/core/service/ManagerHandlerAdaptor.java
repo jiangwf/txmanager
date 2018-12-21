@@ -29,9 +29,10 @@ public class ManagerHandlerAdaptor implements ManagerHandler {
     }
 
     @Override
-    public void addTransaction(String transactionGroupId, TransactionItem transactionItem) {
-        TransactionGroup transactionGroup = simpleStore.findTransactionGroup(transactionGroupId);
-        transactionGroup.getTransactionItemList().add(transactionItem);
+    public void addTransaction(TransactionGroup transactionGroup, TransactionItem transactionItem) {
+        TransactionGroup group = simpleStore.findTransactionGroup(transactionGroup.getGroupId());
+        group.getTransactionItemList().add(transactionItem);
+        group.setStatus(transactionGroup.getStatus());
     }
 
     @Override
