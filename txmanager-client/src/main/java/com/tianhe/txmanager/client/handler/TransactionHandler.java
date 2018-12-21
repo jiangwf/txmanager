@@ -5,7 +5,8 @@ import com.tianhe.txmanager.common.enums.TransactionStatusEnum;
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.core.ManagerContext;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -15,8 +16,9 @@ import java.util.Date;
  * @author: he.tian
  * @time: 2018-12-06 10:44
  */
-@Slf4j
 public abstract class TransactionHandler {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public TransactionItem buildGroupItem(TransactionGroup group) {
         TransactionItem item = new TransactionItem();
@@ -25,7 +27,7 @@ public abstract class TransactionHandler {
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
-            log.error("txManager 构建事务组groupItem，获取本机ip地址失败，异常信息={}", e);
+            logger.error("txManager 构建事务组groupItem，获取本机ip地址失败，异常信息={}", e);
         }
         item.setRole(RoleEnum.GROUP.getCode());
         item.setTaskId(group.getGroupId());
@@ -41,7 +43,7 @@ public abstract class TransactionHandler {
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
-            log.error("txManager 构建事务组startItem，获取本机ip地址失败，异常信息={}", e);
+            logger.error("txManager 构建事务组startItem，获取本机ip地址失败，异常信息={}", e);
         }
         item.setCreateDate(new Date());
         return item;
@@ -62,7 +64,7 @@ public abstract class TransactionHandler {
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
-            log.error("txManager 构建事务组joinItem，获取本机ip地址失败，异常信息={}", e);
+            logger.error("txManager 构建事务组joinItem，获取本机ip地址失败，异常信息={}", e);
         }
         return item;
     }

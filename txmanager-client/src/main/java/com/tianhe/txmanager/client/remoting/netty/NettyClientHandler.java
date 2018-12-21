@@ -20,7 +20,6 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,6 @@ import java.util.concurrent.TimeUnit;
  * @time: 2018-11-01 17:44
  */
 @Component
-@Slf4j
 @ChannelHandler.Sharable
 public class NettyClientHandler extends ChannelInboundHandlerAdapter{
 
@@ -55,10 +53,13 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
        TransactionRequest request = (TransactionRequest) msg;
        ActionEnum actionEnum = ActionEnum.get(request.getAction());
-       log.info("txManager netty客户端接收到了={}请求",actionEnum.getName());
+        logger.info("txManager netty客户端接收到了{}请求",actionEnum.getName());
        try {
            switch (actionEnum){
                case HEART_BEAT:
+                   Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
+                   task.setResult(ResultEnum.SUCCESS.getCode());
+                   task.singal();
                    break;
                case RECEIVE:
                    receive(request);
@@ -88,7 +89,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param request
      */
     private void findTransactionInfo(TransactionRequest request) {
-        log.info("txManager client处理查找事务信息请求");
+        logger.info("txManager client处理查找事务信息请求");
         Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
         task.setResult(request.getTransactionGroup());
         task.singal();
@@ -99,7 +100,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param request
      */
     private void getTransactionGroupStatus(TransactionRequest request) {
-        log.info("txManager client处理查找事务组状态请求");
+        logger.info("txManager client处理查找事务组状态请求");
         Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
         TransactionGroup transactionGroup = request.getTransactionGroup();
         task.setResult(transactionGroup.getStatus());
@@ -111,7 +112,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param request
      */
     private void execute(TransactionRequest request) {
-        log.info("txManager client处理事务提交或回滚请求");
+        logger.info("txManager client处理事务提交或回滚请求");
         List<TransactionItem> transactionItemList = request.getTransactionGroup().getTransactionItemList();
         if(CollectionUtil.isNotEmpty(transactionItemList)){
             TransactionItem transactionItem = transactionItemList.get(0);
@@ -126,7 +127,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
      * @param transactionRequest
      */
     private void receive(TransactionRequest transactionRequest) {
-        log.info("txManager client处理接收请求");
+        logger.info("txManager client处理接收请求");
         Task task = ManagerContext.INSTANCE.getTask(transactionRequest.getTaskId());
         task.setResult(ResultEnum.SUCCESS.getCode().equals(transactionRequest.getResult()));
         task.singal();
@@ -150,10 +151,11 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     }
 
     public Object send(TransactionRequest request){
-        log.info("txManager client发送事务请求");
+        logger.info("txManager client发送事务请求");
         Object result = null;
         if(ctx != null && ctx.channel() != null && ctx.channel().isActive()){
             Task task = ManagerContext.INSTANCE.getTask(IdUtil.getTaskId());
+            request.setTaskId(task.getTaskId());
             ctx.writeAndFlush(request);
 //            超时处理
             ScheduledFuture<?> schedule = ScheduleExecutorServiceHelper.INSTANCE.schedule(new Runnable() {
@@ -185,8 +187,24 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
     }
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        logger.info("netty client 连接被异常关闭了，现在重连");
+        springHelper.getBean(NettyClient.class).doConnect();
+    }
+
+    @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.ctx = ctx;
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
+        logger.error("txManager netty client出现异常");
+        if(ctx.channel().isActive()){
+            ctx.close();
+        }
     }
 }

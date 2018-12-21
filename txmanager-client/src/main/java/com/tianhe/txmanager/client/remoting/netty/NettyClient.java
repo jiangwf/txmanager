@@ -82,8 +82,11 @@ public class NettyClient{
             public void operationComplete(ChannelFuture channelFuture) throws Exception {
                 if(channelFuture.isSuccess()){
                     channel = channelFuture.channel();
+                    logger.info("====================================================");
                     logger.info("txManager netty client连接netty server成功，url={}",clientConfig.getTxManagerHost()+":"+clientConfig.getTxManagerPort());
                 }else{
+//                    TODO 现在处理，连接不上一直重试，后续优化超过最大重试次数报警
+                    logger.info("====================================================");
                     logger.info("txManager netty client连接netty server失败，5s后重试,url={}",clientConfig.getTxManagerHost()+":"+clientConfig.getTxManagerPort());
                     channelFuture.channel().eventLoop().schedule(NettyClient.this::doConnect,5, TimeUnit.SECONDS);
                 }

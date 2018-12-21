@@ -1,5 +1,28 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="/resources/js/jquery-1.11.0.min.js"></script>
+    <script>
+
+        function send() {
+            var input = $('#input').val();
+            $.post(
+                '/remoting.do',
+                {'input':input},
+                function (data) {
+                    alert(data.result);
+                }
+            );
+        }
+
+    </script>
+</head>
 <body>
-<h2>Hello World!</h2>
+
+<input type="text" id="input"><br>
+<button id="send" onclick="send()">发送</button>
+
 </body>
 </html>

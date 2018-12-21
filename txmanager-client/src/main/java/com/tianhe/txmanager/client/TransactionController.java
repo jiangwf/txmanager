@@ -8,7 +8,8 @@ import com.tianhe.txmanager.common.enums.ResultEnum;
 import com.tianhe.txmanager.common.enums.TransactionStatusEnum;
 import com.tianhe.txmanager.common.utils.IdUtil;
 import com.tianhe.txmanager.core.ManagerContext;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +24,9 @@ import java.util.concurrent.TimeUnit;
  * @time: 2018-11-26 17:49
  */
 @Component
-@Slf4j
 public class TransactionController {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private TransactionHandlerAdaptor transactionHandlerAdaptor;
@@ -39,13 +41,13 @@ public class TransactionController {
         if (Objects.isNull(ManagerContext.INSTANCE.getGroupId())) {
             try {
                 boolean saveTransactionGroup = transactionHandlerAdaptor.saveTransactionGroup(taskId, transactionGroupId);
-                log.info("txManager 创建事务组，事务组id={},taskId={},执行结果={}", transactionGroupId, taskId, saveTransactionGroup);
+                logger.info("txManager 创建事务组，事务组id={},taskId={},执行结果={}", transactionGroupId, taskId, saveTransactionGroup);
                 if (saveTransactionGroup) {
 //                  提交本地事务
                     connection.commit();
-                    log.info("txManager 提交事务，事务组id={}，事务id={}", transactionGroupId, taskId);
+                    logger.info("txManager 提交事务，事务组id={}，事务id={}", transactionGroupId, taskId);
                     boolean completeCommit = transactionHandlerAdaptor.completeCommit(taskId);
-                    log.info("txManager 通知事务管理器事务提交，事务组id={},事务id={},执行结果={}", transactionGroupId, taskId, completeCommit);
+                    logger.info("txManager 通知事务管理器事务提交，事务组id={},事务id={},执行结果={}", transactionGroupId, taskId, completeCommit);
 
                 }
             } catch (Throwable e) {
@@ -53,15 +55,15 @@ public class TransactionController {
 //              通知事务管理器整个事务组的事务进行回滚
                 try {
                     connection.rollback();
-                    log.info("txManager 事务提交失败，回滚，事务组id={}，事务id={}", transactionGroupId, taskId);
+                    logger.info("txManager 事务提交失败，回滚，事务组id={}，事务id={}", transactionGroupId, taskId);
                 } catch (SQLException ex) {
-                    log.error("txManager 事务提交失败，事务组id={}，事务id={},异常信息={}", transactionGroupId, taskId, ex);
+                    logger.error("txManager 事务提交失败，事务组id={}，事务id={},异常信息={}", transactionGroupId, taskId, ex);
                 }
                 transactionHandlerAdaptor.rollbackTransactionGroup();
-                log.info("txManager 回滚事务组事务，事务id={}", transactionGroupId);
+                logger.info("txManager 回滚事务组事务，事务id={}", transactionGroupId);
             } finally {
                 transactionHandlerAdaptor.release(taskId);
-                log.info("txManager 事务执行完毕，删除事务组id={}，事务id={}", transactionGroupId, taskId);
+                logger.info("txManager 事务执行完毕，删除事务组id={}，事务id={}", transactionGroupId, taskId);
             }
         } else {
             Task task = ManagerContext.INSTANCE.getTask(taskId);
@@ -69,7 +71,7 @@ public class TransactionController {
 //                如果事务组存在就添加参与者事务信息
 //                添加事务组信息
                 boolean addTransaction = transactionHandlerAdaptor.addTransaction(taskId);
-                log.info("txManager 添加事务，事务组id={},事务id={}", transactionGroupId, taskId);
+                logger.info("txManager 添加事务，事务组id={},事务id={}", transactionGroupId, taskId);
                 if (addTransaction) {
 //                  客户端netty连接超时处理
                     ScheduledFuture<?> schedule = ScheduleExecutorServiceHelper.INSTANCE.schedule(new Runnable() {
@@ -97,31 +99,31 @@ public class TransactionController {
                     if (TransactionStatusEnum.COMMIT.getCode().equals(task.getResult())) {
 //                      提交本地事务
                         connection.commit();
-                        log.info("txManager 提交事务，事务组id={},事务id={}", transactionGroupId, taskId);
+                        logger.info("txManager 提交事务，事务组id={},事务id={}", transactionGroupId, taskId);
 //                      通知txManager 事务提交
                         boolean completeCommit = transactionHandlerAdaptor.completeCommit(taskId);
-                        log.info("txManager 通知事务管理器，事务提交，事务组id={}，事务id={}，执行结果={}", transactionGroupId, taskId, completeCommit);
+                        logger.info("txManager 通知事务管理器，事务提交，事务组id={}，事务id={}，执行结果={}", transactionGroupId, taskId, completeCommit);
 
                     } else {
                         connection.rollback();
-                        log.info("txManager 事务回滚，事务组id={}，事务id={}", transactionGroupId, taskId);
+                        logger.info("txManager 事务回滚，事务组id={}，事务id={}", transactionGroupId, taskId);
                         boolean rollbackTransactionItem = transactionHandlerAdaptor.rollbackTransactionItem(taskId);
-                        log.info("txManager 事务回滚，事务组id={}，事务id={},执行结果={}", transactionGroupId, taskId, rollbackTransactionItem);
+                        logger.info("txManager 事务回滚，事务组id={}，事务id={},执行结果={}", transactionGroupId, taskId, rollbackTransactionItem);
                     }
                 }
             } catch (Throwable throwable) {
                 try {
                     connection.rollback();
-                    log.info("txManager 事务提交失败，事务回滚，事务组id={},事务id={}", transactionGroupId, taskId);
+                    logger.info("txManager 事务提交失败，事务回滚，事务组id={},事务id={}", transactionGroupId, taskId);
                 } catch (SQLException e) {
-                    log.error("本地事务回滚失败，事务组id={}，事务id={},异常信息={}", transactionGroupId, taskId, e);
+                    logger.error("本地事务回滚失败，事务组id={}，事务id={},异常信息={}", transactionGroupId, taskId, e);
                 }
 //              通知txManager 事务失败
                 boolean fail = transactionHandlerAdaptor.fail(taskId);
-                log.info("txManager 同事事务管理器事务失败，事务组id={}，事务id={}，执行结果={}", transactionGroupId, taskId, fail);
+                logger.info("txManager 同事事务管理器事务失败，事务组id={}，事务id={}，执行结果={}", transactionGroupId, taskId, fail);
             } finally {
                 ManagerContext.INSTANCE.getTaskMap().remove(taskId);
-                log.info("txManager 事务执行完毕,删除taskId={}", taskId);
+                logger.info("txManager 事务执行完毕,删除taskId={}", taskId);
             }
         }
     }

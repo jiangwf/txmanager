@@ -4,7 +4,8 @@ import com.tianhe.txmanager.common.ExecutorServiceHelper;
 import com.tianhe.txmanager.common.ScheduleExecutorServiceHelper;
 import com.tianhe.txmanager.core.SpringHelper;
 import com.tianhe.txmanager.core.store.SimpleStore;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +16,9 @@ import java.util.concurrent.TimeUnit;
  * @time: 2018-12-06 10:57
  */
 @Component
-@Slf4j
 public class TransactionCleaner {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private SpringHelper springHelper;
@@ -26,8 +28,8 @@ public class TransactionCleaner {
         ScheduleExecutorServiceHelper.INSTANCE.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                log.info("=======================================");
-                log.info("txManager 事务组信息={}"+simpleStore.getTransactionGroupMap().values());
+                logger.info("=======================================");
+                logger.info("txManager 事务组信息={}"+simpleStore.getTransactionGroupMap().values());
             }
         },5,5, TimeUnit.SECONDS);
 
@@ -38,13 +40,13 @@ public class TransactionCleaner {
                 try {
                     ScheduleExecutorServiceHelper.INSTANCE.awaitTermination(5,TimeUnit.MINUTES);
                 } catch (InterruptedException e) {
-                    log.error("txManager 关闭调度线程池失败，异常信息={}",e);
+                    logger.error("txManager 关闭调度线程池失败，异常信息={}",e);
                 }
                 ExecutorServiceHelper.INSTANCE.shutdown();
                 try {
                     ExecutorServiceHelper.INSTANCE.awaitTermination(5,TimeUnit.MINUTES);
                 } catch (InterruptedException e) {
-                    log.error("txManager 关闭线程池失败，异常信息={}",e);
+                    logger.error("txManager 关闭线程池失败，异常信息={}",e);
                 }
             }
         }));

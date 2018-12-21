@@ -3,7 +3,6 @@ package com.tianhe.txmanager.core.service;
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
 import com.tianhe.txmanager.core.store.SimpleStore;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import java.util.List;
  * @author: he.tian
  * @time: 2018-11-22 14:28
  */
-@Slf4j
 @Service
 public class ManagerHandlerAdaptor implements ManagerHandler {
 
