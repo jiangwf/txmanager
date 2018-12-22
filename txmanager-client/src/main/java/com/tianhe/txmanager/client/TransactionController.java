@@ -90,7 +90,7 @@ public class TransactionController {
                             }
                         }
                     }, clientConfig.getDelayTime(), TimeUnit.SECONDS);
-                    task.wait();
+                    task.await();
 
 //                  如果客户端正常返回了就不需要执行定时任务了
                     if (!schedule.isDone()) {

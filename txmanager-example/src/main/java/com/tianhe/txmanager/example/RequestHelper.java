@@ -39,7 +39,7 @@ public class RequestHelper {
         TransactionItem item = new TransactionItem();
         item.setCreateDate(new Date());
         item.setTransactionGroupId(group.getGroupId());
-        item.setRole(RoleEnum.GROUP.getCode());
+        item.setRole(RoleEnum.START.getCode());
         item.setTaskId(IdUtil.getTransactionId());
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
