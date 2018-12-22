@@ -34,7 +34,7 @@ public class TransactionController {
     @Autowired
     private ClientConfig clientConfig;
 
-    public void intercept(Connection connection) {
+    public void execute(Connection connection) {
         String transactionGroupId = IdUtil.getTransactionGroupId();
         String taskId = IdUtil.getTaskId();
 //      如果事务组不存在就创建事务组，并添加发起者的事务信息

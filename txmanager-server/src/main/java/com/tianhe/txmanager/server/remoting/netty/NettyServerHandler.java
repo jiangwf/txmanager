@@ -93,9 +93,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         List<TransactionItem> transactionItemList = request.getTransactionGroup().getTransactionItemList();
         TransactionItem transactionItem = transactionItemList.get(0);
         managerHandler.updateTransactionItem(request.getTransactionGroup().getGroupId(),transactionItem);
+        transactionItem.setStatus(TransactionStatusEnum.COMMIT.getCode());
         request.setTaskId(request.getTaskId());
         request.setResult(ResultEnum.SUCCESS.getCode());
-        request.setAction(ActionEnum.RECEIVE.getCode());
+        request.setAction(ActionEnum.COMPLETE_COMMIT.getCode());
         ctx.writeAndFlush(request);
     }
 
@@ -113,8 +114,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         ctx.writeAndFlush(request);
         TransactionGroup transactionGroup = transactionRequest.getTransactionGroup();
         transactionGroup.setStatus(TransactionStatusEnum.COMMIT.getCode());
-        managerHandler.updateTransactionGroupStatus(transactionGroup);
-        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId()).getTransactionItemList();
+        TransactionGroup group = managerHandler.updateTransactionGroupStatus(transactionGroup);
+        List<TransactionItem> transactionItemList = group.getTransactionItemList();
         List<TransactionItem> preCommitList = new ArrayList<>();
         for (TransactionItem transactionItem : transactionItemList) {
             if(RoleEnum.JOIN.getCode().equals(transactionItem.getRole())){

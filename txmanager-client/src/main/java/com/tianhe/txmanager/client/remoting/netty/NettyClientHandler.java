@@ -116,7 +116,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
         List<TransactionItem> transactionItemList = request.getTransactionGroup().getTransactionItemList();
         if(CollectionUtil.isNotEmpty(transactionItemList)){
             TransactionItem transactionItem = transactionItemList.get(0);
-            Task task = ManagerContext.INSTANCE.getTask(transactionItem.getTaskId());
+            Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
             task.setResult(transactionItem.getStatus());
             task.singal();
         }

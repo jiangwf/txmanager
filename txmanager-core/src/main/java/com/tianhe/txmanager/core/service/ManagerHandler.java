@@ -56,7 +56,7 @@ public interface ManagerHandler {
      * 更新事务组状态
      * @param transactionGroup
      */
-    public void updateTransactionGroupStatus(TransactionGroup transactionGroup);
+    public TransactionGroup updateTransactionGroupStatus(TransactionGroup transactionGroup);
 
 
 }

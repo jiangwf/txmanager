@@ -64,8 +64,9 @@ public class ManagerHandlerAdaptor implements ManagerHandler {
     }
 
     @Override
-    public void updateTransactionGroupStatus(TransactionGroup transactionGroup) {
-        simpleStore.deleteTransactionGroup(transactionGroup.getGroupId());
-        simpleStore.save(transactionGroup);
+    public TransactionGroup updateTransactionGroupStatus(TransactionGroup transactionGroup) {
+        TransactionGroup group = simpleStore.findTransactionGroup(transactionGroup.getGroupId());
+        group.setStatus(transactionGroup.getStatus());
+        return transactionGroup;
     }
 }
