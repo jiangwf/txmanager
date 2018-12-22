@@ -2,8 +2,7 @@ package com.tianhe.txmanager.core.service;
 
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
-
-import java.util.List;
+import com.tianhe.txmanager.common.model.TransactionRequest;
 
 /**
  * @author: he.tian
@@ -20,7 +19,7 @@ public interface ManagerHandler {
 
     /**
      * 往事务组添加事务
-     * @param transactionGroupId
+     * @param
      * @param transactionItem
      */
     public void addTransaction(TransactionGroup transactionGroup, TransactionItem transactionItem);
@@ -58,7 +57,11 @@ public interface ManagerHandler {
      */
     public TransactionGroup updateTransactionGroupStatus(TransactionGroup transactionGroup);
 
-    public void registTransactionItemSize(String threadNo,Integer transactionItemSize);
+
+    public void registTransactionItemSize(Long threadNo,Integer transactionItemSize);
 
 
+    public void ifHasTransactionItemNotDoneBlock(TransactionRequest transactionRequest);
+
+    public String findTransactionExists(TransactionRequest request);
 }

@@ -77,6 +77,11 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 case REGIST_TRANSACTION_ITEM:
                     executeRegistTransactionItemSize(ctx,request);
                     break;
+                case FIND_TRANSACTION_EXIST:
+                    executeFindTransactionExists(ctx,request);
+                    break;
+                case SAVE_TRANSACTION_GROUP:
+                    executeSaveTransactionGroup(ctx,request);
                 default:
                     executeHeartBeat(ctx,request);
                     break;
@@ -86,7 +91,25 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    private void executeSaveTransactionGroup(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
+        logger.info("txManager 服务端处理保存事务组id请求");
+        TransactionRequest request = new TransactionRequest();
+        request.setAction(ActionEnum.RECEIVE.getCode());
+        request.setTaskId(transactionRequest.getTaskId());
+        request.setResult(ResultEnum.SUCCESS.getCode());
+        ctx.writeAndFlush(request);
+    }
+
+    private void executeFindTransactionExists(ChannelHandlerContext ctx, TransactionRequest request) {
+        logger.info("txManager 服务端处理查询事务组是否存在请求");
+        String groupId =  managerHandler.findTransactionExists(request);
+        request.setResult(groupId);
+        request.setAction(ActionEnum.FIND_TRANSACTION_EXIST.getCode());
+        ctx.writeAndFlush(request);
+    }
+
     private void executeRegistTransactionItemSize(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
+        logger.info("txManager 服务端处理注册事务单元个数请求");
         managerHandler.registTransactionItemSize(transactionRequest.getThreadNo(),transactionRequest.getTransactionItemSize());
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.RECEIVE.getCode());
@@ -119,6 +142,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     private void executePreCommit(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
         logger.info("txManager 服务端处理预提交事务请求");
+
+//      如果其他的事务单元还没执行完，执行快的事务单元阻塞
+        managerHandler.ifHasTransactionItemNotDoneBlock(transactionRequest);
+
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.RECEIVE.getCode());
         request.setTaskId(transactionRequest.getTaskId());
@@ -172,8 +199,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 //       更新事务组状态
         TransactionGroup transactionGroup = transactionRequest.getTransactionGroup();
         transactionGroup.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
-        managerHandler.updateTransactionGroupStatus(transactionGroup);
-        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId()).getTransactionItemList();
+        TransactionGroup group = managerHandler.updateTransactionGroupStatus(transactionGroup);
+        List<TransactionItem> transactionItemList = group.getTransactionItemList();
         List<TransactionItem> rollbackTransaqctionItemList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(transactionItemList)){
             for (TransactionItem transactionItem : transactionItemList) {

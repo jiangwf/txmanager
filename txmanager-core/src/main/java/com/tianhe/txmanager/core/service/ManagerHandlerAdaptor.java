@@ -2,6 +2,7 @@ package com.tianhe.txmanager.core.service;
 
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
+import com.tianhe.txmanager.common.model.TransactionRequest;
 import com.tianhe.txmanager.core.ManagerContext;
 import com.tianhe.txmanager.core.store.SimpleStore;
 import org.apache.commons.lang3.StringUtils;
@@ -76,8 +77,24 @@ public class ManagerHandlerAdaptor implements ManagerHandler {
     }
 
     @Override
-    public void registTransactionItemSize(String threadNo, Integer transactionItemSize) {
+    public void registTransactionItemSize(Long threadNo, Integer transactionItemSize) {
         ManagerContext.INSTANCE.getTransactionItemSizeMap().put(threadNo,transactionItemSize);
         logger.info("txManager 事务单元个数信息========="+ManagerContext.INSTANCE.getTransactionItemSizeMap());
+    }
+
+    @Override
+    public void ifHasTransactionItemNotDoneBlock(TransactionRequest transactionRequest) {
+        Integer transactionItemSize = ManagerContext.INSTANCE.getTransactionItemSizeMap().get(transactionRequest.getThreadNo());
+        List<TransactionItem> transactionItemList = simpleStore.findTransactionGroup(transactionRequest.getTransactionGroup().getGroupId()).getTransactionItemList();
+        if(transactionItemList.size() != transactionItemSize.intValue()){
+            logger.info("txManager 当前事务组还有其他事务单元未执行完毕，事务单元阻塞，等待其他事务单元唤醒，事务组={}，事务单元id={}",
+                    transactionRequest.getTransactionGroup().getGroupId(), transactionRequest.getTransactionGroup().getTransactionItemList().get(0).getTaskId());
+            return;
+        }
+    }
+
+    @Override
+    public String findTransactionExists(TransactionRequest request) {
+        return ManagerContext.INSTANCE.getGroupIdMap().get(request.getThreadNo());
     }
 }

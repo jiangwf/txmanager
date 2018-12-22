@@ -49,9 +49,8 @@ public abstract class TransactionHandler {
         return item;
     }
 
-    public void release(Long threadNo, String taskId){
+    public void release(String taskId){
         ManagerContext.INSTANCE.getTaskMap().remove(taskId);
-        ManagerContext.INSTANCE.removeGroupId(threadNo);
     }
 
     public TransactionItem buildJoinTransactionItem(Long threadNo,String taskId){

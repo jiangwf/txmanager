@@ -133,6 +133,7 @@ public class RequestHelper {
         TransactionRequest request = new TransactionRequest();
         request.setAction(ActionEnum.REGIST_TRANSACTION_ITEM.getCode());
         request.setTransactionItemSize(transactionItemSize);
+        request.setThreadNo(Thread.currentThread().getId());
         return request;
     }
 }

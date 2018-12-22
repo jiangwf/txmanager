@@ -117,4 +117,28 @@ public class TransactionClientHandlerAdaptor implements TransactionClientHandler
         }
         return false;
     }
+
+    @Override
+    public String findTransactionExist(TransactionRequest request) {
+        Object send = clientHandler.send(request);
+        if(Objects.nonNull(send)){
+            return (String) send;
+        }
+        return "";
+    }
+
+    @Override
+    public boolean saveTransactionGroupId(Long threadNo, String groupId) {
+        TransactionRequest request = new TransactionRequest();
+        request.setAction(ActionEnum.SAVE_TRANSACTION_GROUP.getCode());
+        request.setThreadNo(threadNo);
+        TransactionGroup group = new TransactionGroup();
+        group.setGroupId(groupId);
+        request.setTransactionGroup(group);
+        Object send = clientHandler.send(request);
+        if(Objects.nonNull(send)){
+            return (boolean) send;
+        }
+        return false;
+    }
 }

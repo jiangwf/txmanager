@@ -32,6 +32,10 @@ public enum ActionEnum {
 
     RECEIVE("RECEIVE","接收"),
 
+    FIND_TRANSACTION_EXIST("FIND_TRANSACTION","查询当前线程是否已创建事务组"),
+
+    SAVE_TRANSACTION_GROUP("SAVE_TRANSACTION_GROUP","保存事务组id"),
+
     REGIST_TRANSACTION_ITEM("REGISTER_TRANSACTION_ITEM","注册事务单元");
 
     @Getter

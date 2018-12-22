@@ -76,12 +76,22 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
                case FIND_TRANSACTION_GROUP:
                    findTransactionInfo(request);
                    break;
+               case FIND_TRANSACTION_EXIST:
+                   findTransactionExists(request);
+                   break;
                default:
                        break;
            }
        }finally {
            ReferenceCountUtil.release(msg);
        }
+    }
+
+    private void findTransactionExists(TransactionRequest request) {
+        logger.info("txManager client处理查找事务组是否存在请求");
+        Task task = ManagerContext.INSTANCE.getTask(request.getTaskId());
+        task.setResult(request.getResult());
+        task.singal();
     }
 
     /**
@@ -154,8 +164,12 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter{
         logger.info("txManager client发送事务请求");
         Object result = null;
         if(ctx != null && ctx.channel() != null && ctx.channel().isActive()){
-            Task task = ManagerContext.INSTANCE.getTask(IdUtil.getTaskId());
-            request.setTaskId(task.getTaskId());
+            Task task = ManagerContext.INSTANCE.getTask(IdUtil.getTaskId()); //TODO 这里会出现内存泄漏，后续优化
+            if((ActionEnum.PRE_COMMIT.getCode().equals(request.getAction())) || (ActionEnum.ROLLBACK.getCode().equals(request.getAction()))){
+                request.setTaskId(request.getTransactionGroup().getTransactionItemList().get(0).getTaskId());
+            }else{
+                request.setTaskId(task.getTaskId());
+            }
             ctx.writeAndFlush(request);
 //            超时处理
             ScheduledFuture<?> schedule = ScheduleExecutorServiceHelper.INSTANCE.schedule(new Runnable() {

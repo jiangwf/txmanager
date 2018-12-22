@@ -25,7 +25,7 @@ public class TransactionRequest implements Serializable{
 
     private String result;
 
-    private String threadNo;
+    private Long threadNo;
 
     private Integer transactionItemSize;
 

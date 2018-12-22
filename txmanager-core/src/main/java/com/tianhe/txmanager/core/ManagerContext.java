@@ -28,7 +28,7 @@ public class ManagerContext {
     private ConcurrentMap<Long,String> groupIdMap = new ConcurrentHashMap<>();
 
     @Getter
-    private ConcurrentMap<String,Integer> transactionItemSizeMap = new ConcurrentHashMap<>();
+    private ConcurrentMap<Long,Integer> transactionItemSizeMap = new ConcurrentHashMap<>();
 
     private ManagerContext(){}
 

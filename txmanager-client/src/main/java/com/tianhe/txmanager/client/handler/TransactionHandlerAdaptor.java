@@ -4,6 +4,7 @@ import com.tianhe.txmanager.client.TransactionClientHandlerAdaptor;
 import com.tianhe.txmanager.common.enums.TransactionStatusEnum;
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
+import com.tianhe.txmanager.common.model.TransactionRequest;
 import com.tianhe.txmanager.core.ManagerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
         transactionItemList.add(item);
         group.setTransactionItemList(transactionItemList);
         boolean saveTransactionGroup = transactionClientHandlerAdaptor.createTransactionGroup(group);
-        ManagerContext.INSTANCE.setGroupId(threadNo,group.getGroupId());
+        transactionClientHandlerAdaptor.saveTransactionGroupId(threadNo,group.getGroupId());
         return saveTransactionGroup;
     }
 
@@ -47,8 +48,8 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
         return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(threadNo), taskId, TransactionStatusEnum.COMMIT.getCode());
     }
 
-    public void rollbackTransactionGroup(Long threadNo) {
-        transactionClientHandlerAdaptor.rollbackTransactionGroup(ManagerContext.INSTANCE.getGroupId(threadNo));
+    public void rollbackTransactionGroup(String groupId) {
+        transactionClientHandlerAdaptor.rollbackTransactionGroup(groupId);
     }
 
     public boolean addTransaction(Long threadNo,String taskId) {
@@ -65,5 +66,9 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
 
     public boolean fail(Long threadNo,String taskId) {
        return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(threadNo), taskId, TransactionStatusEnum.FAIL.getCode());
+    }
+
+    public String findTransactionExist(TransactionRequest request) {
+        return transactionClientHandlerAdaptor.findTransactionExist(request);
     }
 }

@@ -24,6 +24,7 @@ public abstract class CommandHelper {
      */
     public static TransactionRequest buildCommand(TransactionItem transactionItem, TransactionStatusEnum transactionStatusEnum, Channel channel){
         TransactionRequest request = new TransactionRequest();
+        request.setTaskId(transactionItem.getTaskId());
         TransactionGroup group = new TransactionGroup();
         channel = NettyManager.getInstance().getChannelByRemoteAddr(transactionItem.getRemoteAddr());
         if(TransactionStatusEnum.ROLLBACK.getCode().equals(transactionStatusEnum.getCode())){

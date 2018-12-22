@@ -2,6 +2,7 @@ package com.tianhe.txmanager.client;
 
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
+import com.tianhe.txmanager.common.model.TransactionRequest;
 
 /**
  * @author: he.tian
@@ -11,13 +12,15 @@ public interface TransactionClientHandler {
 
     /**
      * 创建事务组
+     *
      * @param transactionGroup
      * @return
      */
-   public boolean createTransactionGroup(TransactionGroup transactionGroup);
+    public boolean createTransactionGroup(TransactionGroup transactionGroup);
 
     /**
      * 添加事务
+     *
      * @param transactionGroupId
      * @param transactionItem
      * @return
@@ -26,6 +29,7 @@ public interface TransactionClientHandler {
 
     /**
      * 查找事务组状态
+     *
      * @param transactionGroupId
      * @return
      */
@@ -33,6 +37,7 @@ public interface TransactionClientHandler {
 
     /**
      * 查找事务组信息
+     *
      * @param transactionGroupId
      * @return
      */
@@ -40,12 +45,14 @@ public interface TransactionClientHandler {
 
     /**
      * 回滚事务组
+     *
      * @param transactionGroupId
      */
     public void rollbackTransactionGroup(String transactionGroupId);
 
     /**
      * 预提交
+     *
      * @param transactionGroupId
      * @return
      */
@@ -53,12 +60,29 @@ public interface TransactionClientHandler {
 
     /**
      * 提交
+     *
      * @param transactionGroupId
      * @param taskId
      * @param status
      * @return
      */
-    public boolean commit(String transactionGroupId,String itemId,String status);
+    public boolean commit(String transactionGroupId, String itemId, String status);
 
+
+    /**
+     * 查询当前线程是否创建了事务组
+     *
+     * @param request
+     * @return
+     */
+    public String findTransactionExist(TransactionRequest request);
+
+
+    /**
+     * 保存事务组id
+     * @param threadNo
+     * @param groupId
+     */
+    public boolean saveTransactionGroupId(Long threadNo,String groupId);
 
 }
