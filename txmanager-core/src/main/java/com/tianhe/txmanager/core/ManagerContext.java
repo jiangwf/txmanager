@@ -25,7 +25,10 @@ public class ManagerContext {
     private ConcurrentMap<String,Task> taskMap = new ConcurrentHashMap(512);
 
     @Getter
-    private ThreadLocal<String> groupIdThreadLocal = new ThreadLocal<>();
+    private ConcurrentMap<Long,String> groupIdMap = new ConcurrentHashMap<>();
+
+    @Getter
+    private ConcurrentMap<String,Integer> transactionItemSizeMap = new ConcurrentHashMap<>();
 
     private ManagerContext(){}
 
@@ -46,18 +49,18 @@ public class ManagerContext {
         return getTaskMap().get(taskId);
     }
 
-   public String getGroupId(){
-        return groupIdThreadLocal.get();
+   public String getGroupId(Long threadNo){
+        return groupIdMap.get(threadNo);
    }
 
-   public void setGroupId(String groupId){
-       if(StringUtil.isNotEmpty(groupIdThreadLocal.get())){
+   public void setGroupId(Long threadNo, String groupId){
+       if(StringUtil.isNotEmpty(groupIdMap.get(threadNo))){
            throw new TransactionException("txManager 设置事务组id="+groupId+"，当前线程已存在");
        }
-       groupIdThreadLocal.set(groupId);
+       groupIdMap.put(threadNo,groupId);
    }
 
-   public void removeGroupId(){
-        groupIdThreadLocal.remove();
+   public void removeGroupId(Long threadNo){
+       groupIdMap.remove(threadNo);
    }
 }

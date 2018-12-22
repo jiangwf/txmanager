@@ -10,9 +10,10 @@
             var input = $('#input').val();
             var group = $('#group').val();
             var item = $('#item').val();
+            var transactionItemSize = $('#transaction_item_size').val();
             $.post(
                 '/remoting.do',
-                {'input':input,'group':group,'item':item},
+                {'input':input,'group':group,'item':item,'transactionItemSize':transactionItemSize},
                 function (data) {
                     alert(data.result);
                 }

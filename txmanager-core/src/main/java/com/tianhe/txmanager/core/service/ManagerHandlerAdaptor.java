@@ -2,8 +2,11 @@ package com.tianhe.txmanager.core.service;
 
 import com.tianhe.txmanager.common.model.TransactionGroup;
 import com.tianhe.txmanager.common.model.TransactionItem;
+import com.tianhe.txmanager.core.ManagerContext;
 import com.tianhe.txmanager.core.store.SimpleStore;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,8 @@ import java.util.List;
  */
 @Service
 public class ManagerHandlerAdaptor implements ManagerHandler {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private SimpleStore simpleStore;
@@ -68,5 +73,11 @@ public class ManagerHandlerAdaptor implements ManagerHandler {
         TransactionGroup group = simpleStore.findTransactionGroup(transactionGroup.getGroupId());
         group.setStatus(transactionGroup.getStatus());
         return transactionGroup;
+    }
+
+    @Override
+    public void registTransactionItemSize(String threadNo, Integer transactionItemSize) {
+        ManagerContext.INSTANCE.getTransactionItemSizeMap().put(threadNo,transactionItemSize);
+        logger.info("txManager 事务单元个数信息========="+ManagerContext.INSTANCE.getTransactionItemSizeMap());
     }
 }

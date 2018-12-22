@@ -35,18 +35,19 @@ public class TransactionController {
     private ClientConfig clientConfig;
 
     public void execute(Connection connection) {
+        Long threadNo = Thread.currentThread().getId();
         String transactionGroupId = IdUtil.getTransactionGroupId();
         String taskId = IdUtil.getTaskId();
 //      如果事务组不存在就创建事务组，并添加发起者的事务信息
-        if (Objects.isNull(ManagerContext.INSTANCE.getGroupId())) {
+        if (Objects.isNull(ManagerContext.INSTANCE.getGroupId(threadNo))) {
             try {
-                boolean saveTransactionGroup = transactionHandlerAdaptor.saveTransactionGroup(taskId, transactionGroupId);
+                boolean saveTransactionGroup = transactionHandlerAdaptor.saveTransactionGroup(threadNo,taskId, transactionGroupId);
                 logger.info("txManager 创建事务组，事务组id={},taskId={},执行结果={}", transactionGroupId, taskId, saveTransactionGroup);
                 if (saveTransactionGroup) {
 //                  提交本地事务
                     connection.commit();
                     logger.info("txManager 提交事务，事务组id={}，事务id={}", transactionGroupId, taskId);
-                    boolean completeCommit = transactionHandlerAdaptor.completeCommit(taskId);
+                    boolean completeCommit = transactionHandlerAdaptor.completeCommit(threadNo,taskId);
                     logger.info("txManager 通知事务管理器事务提交，事务组id={},事务id={},执行结果={}", transactionGroupId, taskId, completeCommit);
 
                 }
@@ -59,10 +60,10 @@ public class TransactionController {
                 } catch (SQLException ex) {
                     logger.error("txManager 事务提交失败，事务组id={}，事务id={},异常信息={}", transactionGroupId, taskId, ex);
                 }
-                transactionHandlerAdaptor.rollbackTransactionGroup();
+                transactionHandlerAdaptor.rollbackTransactionGroup(threadNo);
                 logger.info("txManager 回滚事务组事务，事务id={}", transactionGroupId);
             } finally {
-                transactionHandlerAdaptor.release(taskId);
+                transactionHandlerAdaptor.release(threadNo,taskId);
                 logger.info("txManager 事务执行完毕，删除事务组id={}，事务id={}", transactionGroupId, taskId);
             }
         } else {
@@ -70,7 +71,7 @@ public class TransactionController {
             try {
 //                如果事务组存在就添加参与者事务信息
 //                添加事务组信息
-                boolean addTransaction = transactionHandlerAdaptor.addTransaction(taskId);
+                boolean addTransaction = transactionHandlerAdaptor.addTransaction(threadNo,taskId);
                 logger.info("txManager 添加事务，事务组id={},事务id={}", transactionGroupId, taskId);
                 if (addTransaction) {
 //                  客户端netty连接超时处理
@@ -78,7 +79,7 @@ public class TransactionController {
                         @Override
                         public void run() {
                             if (!task.isNotify()) {
-                                String transactionGroupStatus = transactionHandlerAdaptor.findTransactionGroupStatus(ManagerContext.INSTANCE.getGroupId());
+                                String transactionGroupStatus = transactionHandlerAdaptor.findTransactionGroupStatus(ManagerContext.INSTANCE.getGroupId(threadNo));
                                 if (TransactionStatusEnum.COMMIT.getCode().equals(transactionGroupStatus)) {
 //                                  如果事务组状态是预提交或提交状态，本地事务状态设置为提交
                                     task.setResult(TransactionStatusEnum.COMMIT.getCode());
@@ -101,13 +102,13 @@ public class TransactionController {
                         connection.commit();
                         logger.info("txManager 提交事务，事务组id={},事务id={}", transactionGroupId, taskId);
 //                      通知txManager 事务提交
-                        boolean completeCommit = transactionHandlerAdaptor.completeCommit(taskId);
+                        boolean completeCommit = transactionHandlerAdaptor.completeCommit(threadNo,taskId);
                         logger.info("txManager 通知事务管理器，事务提交，事务组id={}，事务id={}，执行结果={}", transactionGroupId, taskId, completeCommit);
 
                     } else {
                         connection.rollback();
                         logger.info("txManager 事务回滚，事务组id={}，事务id={}", transactionGroupId, taskId);
-                        boolean rollbackTransactionItem = transactionHandlerAdaptor.rollbackTransactionItem(taskId);
+                        boolean rollbackTransactionItem = transactionHandlerAdaptor.rollbackTransactionItem(threadNo,taskId);
                         logger.info("txManager 事务回滚，事务组id={}，事务id={},执行结果={}", transactionGroupId, taskId, rollbackTransactionItem);
                     }
                 }
@@ -119,7 +120,7 @@ public class TransactionController {
                     logger.error("本地事务回滚失败，事务组id={}，事务id={},异常信息={}", transactionGroupId, taskId, e);
                 }
 //              通知txManager 事务失败
-                boolean fail = transactionHandlerAdaptor.fail(taskId);
+                boolean fail = transactionHandlerAdaptor.fail(threadNo,taskId);
                 logger.info("txManager 同事事务管理器事务失败，事务组id={}，事务id={}，执行结果={}", transactionGroupId, taskId, fail);
             } finally {
                 ManagerContext.INSTANCE.getTaskMap().remove(taskId);

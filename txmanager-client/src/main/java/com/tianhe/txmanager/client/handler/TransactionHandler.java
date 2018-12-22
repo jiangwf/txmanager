@@ -49,17 +49,17 @@ public abstract class TransactionHandler {
         return item;
     }
 
-    public void release(String taskId){
+    public void release(Long threadNo, String taskId){
         ManagerContext.INSTANCE.getTaskMap().remove(taskId);
-        ManagerContext.INSTANCE.removeGroupId();
+        ManagerContext.INSTANCE.removeGroupId(threadNo);
     }
 
-    public TransactionItem buildJoinTransactionItem(String taskId){
+    public TransactionItem buildJoinTransactionItem(Long threadNo,String taskId){
         TransactionItem item = new TransactionItem();
         item.setTaskId(taskId);
         item.setStatus(TransactionStatusEnum.BEGIN.getCode());
         item.setRole(RoleEnum.JOIN.getCode());
-        item.setTransactionGroupId(ManagerContext.INSTANCE.getGroupId());
+        item.setTransactionGroupId(ManagerContext.INSTANCE.getGroupId(threadNo));
         item.setCreateDate(new Date());
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());

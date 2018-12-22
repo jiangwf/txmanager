@@ -30,7 +30,9 @@ public enum ActionEnum {
 
     FIND_TRANSACTION_GROUP("FIND_TRANSACTION_GROUP","查找事务组"),
 
-    RECEIVE("RECEIVE","接收");
+    RECEIVE("RECEIVE","接收"),
+
+    REGIST_TRANSACTION_ITEM("REGISTER_TRANSACTION_ITEM","注册事务单元");
 
     @Getter
     @Setter

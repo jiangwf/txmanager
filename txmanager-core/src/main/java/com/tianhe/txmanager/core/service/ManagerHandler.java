@@ -58,5 +58,7 @@ public interface ManagerHandler {
      */
     public TransactionGroup updateTransactionGroupStatus(TransactionGroup transactionGroup);
 
+    public void registTransactionItemSize(String threadNo,Integer transactionItemSize);
+
 
 }

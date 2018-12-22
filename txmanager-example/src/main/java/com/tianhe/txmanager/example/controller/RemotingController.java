@@ -23,7 +23,7 @@ public class RemotingController {
 
     @RequestMapping("/remoting")
     @ResponseBody
-    public Map<String,Object> send(String input,String group,String item){
+    public Map<String,Object> send(String input,String group,String item,Integer transactionItemSize){
         Map<String,Object> map = new HashMap();
         Object result = null;
         if(ActionEnum.HEART_BEAT.getCode().equals(input)){
@@ -49,6 +49,9 @@ public class RemotingController {
         }
         if(ActionEnum.COMPLETE_COMMIT.getCode().equals(input)){
             result = clientHandler.send(RequestHelper.buildRequestCommit(group,item));
+        }
+        if(ActionEnum.REGIST_TRANSACTION_ITEM.getCode().equals(input)){
+            result = clientHandler.send(RequestHelper.buildRequestRegistTransactionItem(transactionItemSize));
         }
         map.put("result",result);
         return map;

@@ -74,6 +74,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 case COMPLETE_COMMIT:
                     executeCommit(ctx,request);
                     break;
+                case REGIST_TRANSACTION_ITEM:
+                    executeRegistTransactionItemSize(ctx,request);
+                    break;
                 default:
                     executeHeartBeat(ctx,request);
                     break;
@@ -81,6 +84,15 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         }finally {
             ReferenceCountUtil.release(msg);
         }
+    }
+
+    private void executeRegistTransactionItemSize(ChannelHandlerContext ctx, TransactionRequest transactionRequest) {
+        managerHandler.registTransactionItemSize(transactionRequest.getThreadNo(),transactionRequest.getTransactionItemSize());
+        TransactionRequest request = new TransactionRequest();
+        request.setAction(ActionEnum.RECEIVE.getCode());
+        request.setTaskId(transactionRequest.getTaskId());
+        request.setResult(ResultEnum.SUCCESS.getCode());
+        ctx.writeAndFlush(request);
     }
 
     /**

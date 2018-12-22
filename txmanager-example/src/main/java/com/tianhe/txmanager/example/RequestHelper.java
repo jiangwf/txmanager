@@ -128,4 +128,11 @@ public class RequestHelper {
         request.setTransactionGroup(group);
         return request;
     }
+
+    public static TransactionRequest buildRequestRegistTransactionItem(int transactionItemSize) {
+        TransactionRequest request = new TransactionRequest();
+        request.setAction(ActionEnum.REGIST_TRANSACTION_ITEM.getCode());
+        request.setTransactionItemSize(transactionItemSize);
+        return request;
+    }
 }

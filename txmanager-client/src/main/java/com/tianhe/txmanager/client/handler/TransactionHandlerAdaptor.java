@@ -25,7 +25,7 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
     @Autowired
     private TransactionClientHandlerAdaptor transactionClientHandlerAdaptor;
 
-    public boolean saveTransactionGroup(String taskId,String transactionGroupId) {
+    public boolean saveTransactionGroup(Long threadNo, String taskId,String transactionGroupId) {
         TransactionGroup group = new TransactionGroup();
         group.setGroupId(transactionGroupId);
         List<TransactionItem> transactionItemList = new ArrayList<>();
@@ -35,7 +35,7 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
         transactionItemList.add(item);
         group.setTransactionItemList(transactionItemList);
         boolean saveTransactionGroup = transactionClientHandlerAdaptor.createTransactionGroup(group);
-        ManagerContext.INSTANCE.setGroupId(group.getGroupId());
+        ManagerContext.INSTANCE.setGroupId(threadNo,group.getGroupId());
         return saveTransactionGroup;
     }
 
@@ -43,27 +43,27 @@ public class TransactionHandlerAdaptor extends TransactionHandler {
         return transactionClientHandlerAdaptor.preCommit(groupId);
     }
 
-    public boolean completeCommit(String taskId) {
-        return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(), taskId, TransactionStatusEnum.COMMIT.getCode());
+    public boolean completeCommit(Long threadNo, String taskId) {
+        return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(threadNo), taskId, TransactionStatusEnum.COMMIT.getCode());
     }
 
-    public void rollbackTransactionGroup() {
-        transactionClientHandlerAdaptor.rollbackTransactionGroup(ManagerContext.INSTANCE.getGroupId());
+    public void rollbackTransactionGroup(Long threadNo) {
+        transactionClientHandlerAdaptor.rollbackTransactionGroup(ManagerContext.INSTANCE.getGroupId(threadNo));
     }
 
-    public boolean addTransaction(String taskId) {
-        return transactionClientHandlerAdaptor.addTransaction(ManagerContext.INSTANCE.getGroupId(), super.buildJoinTransactionItem(taskId));
+    public boolean addTransaction(Long threadNo,String taskId) {
+        return transactionClientHandlerAdaptor.addTransaction(ManagerContext.INSTANCE.getGroupId(threadNo), super.buildJoinTransactionItem(threadNo,taskId));
     }
 
     public String findTransactionGroupStatus(String groupId) {
         return transactionClientHandlerAdaptor.findTransactionGroupStatus(groupId);
     }
 
-    public boolean rollbackTransactionItem(String taskId) {
-        return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(), taskId, TransactionStatusEnum.ROLLBACK.getCode());
+    public boolean rollbackTransactionItem(Long threaNo,String taskId) {
+        return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(threaNo), taskId, TransactionStatusEnum.ROLLBACK.getCode());
     }
 
-    public boolean fail(String taskId) {
-       return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(), taskId, TransactionStatusEnum.FAIL.getCode());
+    public boolean fail(Long threadNo,String taskId) {
+       return transactionClientHandlerAdaptor.commit(ManagerContext.INSTANCE.getGroupId(threadNo), taskId, TransactionStatusEnum.FAIL.getCode());
     }
 }
