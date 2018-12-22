@@ -36,8 +36,8 @@ public class ManagerHandlerAdaptor implements ManagerHandler {
     }
 
     @Override
-    public List<TransactionItem> selectByTransactionGroupId(String transactionGroupId) {
-        return simpleStore.findTransactionGroup(transactionGroupId).getTransactionItemList();
+    public TransactionGroup selectByTransactionGroupId(String transactionGroupId) {
+        return simpleStore.findTransactionGroup(transactionGroupId);
     }
 
     @Override

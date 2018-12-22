@@ -30,7 +30,7 @@ public interface ManagerHandler {
      * @param transactionGroupId
      * @return
      */
-    public List<TransactionItem> selectByTransactionGroupId(String transactionGroupId);
+    public TransactionGroup selectByTransactionGroupId(String transactionGroupId);
 
     /**
      * 在事务回滚或者事务组中事务项全部提交的时候删除事务组信息

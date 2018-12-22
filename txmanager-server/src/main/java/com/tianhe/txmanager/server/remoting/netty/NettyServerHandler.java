@@ -110,7 +110,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         TransactionGroup transactionGroup = transactionRequest.getTransactionGroup();
         transactionGroup.setStatus(TransactionStatusEnum.COMMIT.getCode());
         managerHandler.updateTransactionGroupStatus(transactionGroup);
-        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId());
+        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId()).getTransactionItemList();
         List<TransactionItem> preCommitList = new ArrayList<>();
         for (TransactionItem transactionItem : transactionItemList) {
             if(RoleEnum.JOIN.getCode().equals(transactionItem.getRole())){
@@ -156,7 +156,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         TransactionGroup transactionGroup = transactionRequest.getTransactionGroup();
         transactionGroup.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
         managerHandler.updateTransactionGroupStatus(transactionGroup);
-        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId());
+        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId()).getTransactionItemList();
         List<TransactionItem> rollbackTransaqctionItemList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(transactionItemList)){
             for (TransactionItem transactionItem : transactionItemList) {
@@ -214,9 +214,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         request.setAction(ActionEnum.FIND_TRANSACTION_GROUP.getCode());
         request.setTaskId(transactionRequest.getTaskId());
         request.setResult(ResultEnum.SUCCESS.getCode());
-        List<TransactionItem> transactionItemList = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId());
-        transactionGroup.setTransactionItemList(transactionItemList);
-        request.setTransactionGroup(transactionGroup);
+        TransactionGroup group = managerHandler.selectByTransactionGroupId(transactionGroup.getGroupId());
+        request.setTransactionGroup(group);
         ctx.writeAndFlush(request);
     }
 

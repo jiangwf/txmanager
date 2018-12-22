@@ -33,7 +33,7 @@ public class TransactionCleaner {
                 logger.info("=======================================");
                 logger.info("txManager 事务组信息===================");
                 for (TransactionGroup group:simpleStore.getTransactionGroupMap().values()){
-                    logger.info("事务组id={}",group.getGroupId());
+                    logger.info("事务组信息="+group.getGroupId()+","+group.getStatus());
                     for (TransactionItem item : group.getTransactionItemList()) {
                         logger.info("事务信息={}",item);
                     }
