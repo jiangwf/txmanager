@@ -93,6 +93,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         List<TransactionItem> transactionItemList = request.getTransactionGroup().getTransactionItemList();
         TransactionItem transactionItem = transactionItemList.get(0);
         managerHandler.updateTransactionItem(request.getTransactionGroup().getGroupId(),transactionItem);
+        request.setTaskId(request.getTaskId());
+        request.setResult(ResultEnum.SUCCESS.getCode());
+        request.setAction(ActionEnum.RECEIVE.getCode());
+        ctx.writeAndFlush(request);
     }
 
     /**

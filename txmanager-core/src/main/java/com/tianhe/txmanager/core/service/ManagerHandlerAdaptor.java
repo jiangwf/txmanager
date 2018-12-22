@@ -50,10 +50,9 @@ public class ManagerHandlerAdaptor implements ManagerHandler {
         TransactionGroup transactionGroup = simpleStore.findTransactionGroup(transactionGroupId);
         List<TransactionItem> transactionItemList = transactionGroup.getTransactionItemList();
         for(TransactionItem transactionItem : transactionItemList) {
-            if(StringUtils.isNotEmpty(updateTransactionItem.getTaskId()) && StringUtils.isNotEmpty(transactionItem.getTaskId()) &&
+            if(StringUtils.isNotEmpty(updateTransactionItem.getTaskId()) &&
                     updateTransactionItem.getTaskId().equals(transactionItem.getTaskId())){
-                transactionItemList.remove(transactionItem);
-                transactionItemList.add(updateTransactionItem);
+                transactionItem.setStatus(updateTransactionItem.getStatus());
                 break;
             }
         }
