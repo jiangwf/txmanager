@@ -40,7 +40,7 @@ public class RequestHelper {
         item.setCreateDate(new Date());
         item.setTransactionGroupId(group.getGroupId());
         item.setRole(RoleEnum.GROUP.getCode());
-        item.setTaskId(IdUtil.getTaskId());
+        item.setTaskId(IdUtil.getTransactionId());
         try {
             item.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
@@ -71,7 +71,7 @@ public class RequestHelper {
             e.printStackTrace();
         }
         item.setRole(RoleEnum.JOIN.getCode());
-        item.setTaskId(group.getGroupId());
+        item.setTaskId(IdUtil.getTransactionId());
 
         group.getTransactionItemList().add(item);
         request.setTransactionGroup(group);
